@@ -176,9 +176,9 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
   const totalGuests = form.adults + form.children;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
       {/* Form */}
-      <form onSubmit={handleSubmit} className="lg:col-span-3 space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DatePicker
@@ -286,7 +286,7 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
       </form>
 
       {/* Sidebar : calendrier + récapitulatif */}
-      <div className="lg:col-span-2">
+      <div>
         <div className="lg:sticky lg:top-24 space-y-6">
         {/* Calendrier de disponibilité */}
         <div className="card-organic p-6">

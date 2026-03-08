@@ -36,7 +36,7 @@ export default async function BookingPage({
   const dict = await getDictionary(lang as Locale);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 md:px-8 py-12 md:py-20">
+    <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-20">
       <div className="text-center mb-12">
         <h1 className="font-heading text-4xl md:text-5xl font-bold text-charcoal-800 mb-3">
           {dict.booking.pageTitle}

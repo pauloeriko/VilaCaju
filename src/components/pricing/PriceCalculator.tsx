@@ -48,7 +48,7 @@ export default function PriceCalculator({
   }, [checkIn, checkOut, lang]);
 
   return (
-    <div className="card-organic p-6 md:p-8">
+    <div className="card-organic p-8 3xl:p-8">
       <h3 className="font-heading text-2xl font-bold text-charcoal-800 mb-6">
         {dict.calculatorTitle}
       </h3>

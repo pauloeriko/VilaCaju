@@ -228,13 +228,13 @@ export default function AvailabilityCalendar({ lang, onDatesChange }: Availabili
     : `${checkIn} → ${checkOut}`;
 
   return (
-    <div className="max-w-xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       {/* En-tête — centré */}
       <div className="text-center mb-6">
-        <h2 className="font-heading text-xl md:text-2xl font-bold text-charcoal-800">
+        <h2 className="font-heading text-2xl md:text-3xl font-bold text-charcoal-800">
           {labels.title}
         </h2>
-        <p className="text-sm text-charcoal-500 mt-1">{instruction}</p>
+        <p className="text-md text-charcoal-500 mt-1">{instruction}</p>
       </div>
 
       {/* Navigation mois + bouton reset */}
@@ -254,7 +254,7 @@ export default function AvailabilityCalendar({ lang, onDatesChange }: Availabili
         {(checkIn || checkOut) && (
           <button
             onClick={handleClear}
-            className="text-xs text-charcoal-500 hover:text-terracotta-500 underline transition-colors"
+            className="text-sm text-charcoal-500 hover:text-terracotta-500 underline transition-colors"
           >
             {labels.clear}
           </button>
@@ -286,7 +286,7 @@ export default function AvailabilityCalendar({ lang, onDatesChange }: Availabili
       />
 
       {/* Légende — uniquement Occupé et Sélectionné */}
-      <div className="mt-6 flex items-center gap-x-6 gap-y-2 text-xs text-charcoal-600 justify-center flex-wrap">
+      <div className="mt-6 flex items-center gap-x-6 gap-y-2 text-sm text-charcoal-600 justify-center flex-wrap">
         <div className="flex items-center gap-1.5">
           <span className="w-5 h-5 rounded bg-charcoal-100 border border-charcoal-200 flex items-center justify-center">
             <span className="text-[9px] font-medium text-charcoal-400 line-through">8</span>
