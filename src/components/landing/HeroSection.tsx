@@ -27,8 +27,10 @@ export default function HeroSection({ dict, lang }: HeroSectionProps) {
         sizes="100vw"
       />
 
-      {/* Gradient overlay */}
+      {/* Gradient overlay bas → haut */}
       <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900/70 via-charcoal-900/30 to-transparent" />
+      {/* Gradient overlay haut → bas pour lisibilité de la navbar */}
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-charcoal-900/50 to-transparent" />
 
       {/* Content */}
       <div className="relative z-10 text-center text-white px-6 max-w-2xl w-full">

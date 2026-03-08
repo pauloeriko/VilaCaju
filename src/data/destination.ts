@@ -61,14 +61,4 @@ export const activities: Activity[] = [
     },
     image: "/images/destination-falaises-cotieres-colorees.jpg",
   },
-  {
-    icon: "Sunset",
-    title: { fr: "Couchers de soleil", en: "Sunsets", pt: "P\u00f4res do sol" },
-    description: {
-      fr: "Des couchers de soleil flamboyants sur l\u2019oc\u00e9an, visibles depuis la terrasse de la villa.",
-      en: "Flamboyant ocean sunsets, visible from the villa\u2019s terrace.",
-      pt: "P\u00f4res do sol flamejantes no oceano, vis\u00edveis do terra\u00e7o da villa.",
-    },
-    image: "/images/destination-coucher-soleil-buggy-dune.jpg",
-  },
 ];

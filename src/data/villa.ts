@@ -15,7 +15,7 @@ export const rooms: Room[] = [
     capacity: 3,
     beds: { fr: "1 lit double + 1 lit simple", en: "1 double + 1 single bed", pt: "1 cama casal + 1 solteiro" },
     ensuite: true,
-    image: "/images/villa-chambre-palmier-exterieur.jpg",
+    image: "/images/photo-chambre1.jpg",
   },
   {
     id: "ocean",
@@ -23,7 +23,7 @@ export const rooms: Room[] = [
     capacity: 3,
     beds: { fr: "1 lit double + 1 lit simple", en: "1 double + 1 single bed", pt: "1 cama casal + 1 solteiro" },
     ensuite: true,
-    image: "/images/villa-chambre-ocean-exterieur.jpg",
+    image: "/images/photo-chambres2.jpg",
   },
   {
     id: "jardin",
@@ -39,7 +39,7 @@ export const rooms: Room[] = [
     capacity: 3,
     beds: { fr: "3 lits simples", en: "3 single beds", pt: "3 camas solteiro" },
     ensuite: true,
-    image: "/images/villa-douche-galets-pluie.jpg",
+    image: "/images/photo-chambre3.jpg",
   },
   {
     id: "caju",
@@ -47,7 +47,7 @@ export const rooms: Room[] = [
     capacity: 3,
     beds: { fr: "1 lit double + 1 lit simple", en: "1 double + 1 single bed", pt: "1 cama casal + 1 solteiro" },
     ensuite: true,
-    image: "/images/villa-couloir-cave-a-vin.jpg",
+    image: "/images/photo-chambre4.jpg",
   },
 ];
 

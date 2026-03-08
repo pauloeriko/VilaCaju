@@ -6,16 +6,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CAROUSEL_IMAGES = [
-  { src: "/images/villa-piscine-mer-palmiers.png",             alt: "Piscine privée avec vue sur l'océan" },
-  { src: "/images/villa-maison-principale-vue-mer.png",        alt: "Maison principale vue mer" },
-  { src: "/images/villa-piscine-terrasse-mer-grand-angle.jpg", alt: "Terrasse, piscine et mer" },
-  { src: "/images/villa-pergola-vue-mer.jpg",                  alt: "Pergola avec vue sur l'océan" },
-  { src: "/images/villa-terrasse-bougainvilliers.jpg",         alt: "Terrasse fleurie" },
-  { src: "/images/villa-piscine-transats-pergola.jpg",         alt: "Piscine et transats" },
-  { src: "/images/villa-jardin-palmiers-vue-mer.jpg",          alt: "Jardin tropical" },
-  { src: "/images/villa-hamacs-jardin-palmiers.jpg",           alt: "Hamacs dans le jardin" },
-  { src: "/images/villa-salon-interieur-volume.jpg",           alt: "Salon intérieur" },
-  { src: "/images/villa-salle-manger-bois.jpg",               alt: "Salle à manger en bois" },
+  { src: "/images/villa-piscine-mer-palmiers.png",      alt: "Piscine privée avec vue sur l'océan" },
+  { src: "/images/villa-maison-principale-vue-mer.png", alt: "Maison principale vue mer" },
+  { src: "/images/photo-facade-entre.jpg",              alt: "Façade et entrée de la villa" },
+  { src: "/images/photo-jardin-ext.jpg",                alt: "Jardin extérieur" },
+  { src: "/images/villa-terrasse-bougainvilliers.jpg",  alt: "Terrasse fleurie" },
+  { src: "/images/villa-piscine-transats-pergola.jpg",  alt: "Piscine et transats" },
+  { src: "/images/photo-salon.jpg",                     alt: "Salon" },
+  { src: "/images/photo-picsine-banc.jpg",              alt: "Piscine et banc" },
+  { src: "/images/photo-cuisine.jpg",                   alt: "Cuisine" },
 ];
 
 export default function VillaCarousel() {
