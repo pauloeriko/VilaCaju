@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(git -C /Users/paul-eric/sources/vila_caju_claude log --oneline -5)"
+    ]
+  }
+}

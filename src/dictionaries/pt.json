@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "title": "Vila Caju — Villa de luxo em Pontal de Maceió, Brasil",
+    "description": "Villa contemporânea de luxo para 17 pessoas em Pontal de Maceió, Nordeste brasileiro. Piscina privativa, jardim tropical, serviço premium."
+  },
+  "nav": {
+    "home": "Início",
+    "villa": "Vila",
+    "destination": "Destino",
+    "rates": "Tarifas",
+    "reviews": "Avaliações",
+    "book": "Reservar",
+    "bookCta": "Reservar agora",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "tagline": "SUA VILLA PRIVADA NO BRASIL",
+    "title": "Vila Caju",
+    "subtitle": "17 pessoas · Pontal de Maceió · Capital mundial do kitesurf",
+    "cta": "Descobrir a villa",
+    "ctaBook": "Reservar sua estadia",
+    "datepickerTitle": "Estime sua estadia",
+    "checkIn": "Chegada",
+    "checkOut": "Saída",
+    "seePrice": "Ver preço"
+  },
+  "gallery": {
+    "title": "Um refúgio de serenidade",
+    "subtitle": "Cada espaço foi pensado para seu conforto absoluto"
+  },
+  "reviews": {
+    "title": "O que dizem nossos hóspedes",
+    "subtitle": "Experiências inesquecíveis",
+    "pageTitle": "Avaliações dos hóspedes",
+    "pageSubtitle": "O que vivem de verdade aqueles que ficam na Vila Caju",
+    "allReviews": "Todas as avaliações",
+    "sourceAirbnb": "Via Airbnb",
+    "sourceGoogle": "Via Google",
+    "sourceDirect": "Estadia direta"
+  },
+  "usp": {
+    "title": "Por que Vila Caju",
+    "capacity": {
+      "title": "17 pessoas",
+      "desc": "Ideal para grandes grupos e reuniões familiares"
+    },
+    "location": {
+      "title": "Pontal de Maceió",
+      "desc": "Um dos melhores destinos mundiais de kitesurf, entre lagoas turquesas e coqueiros"
+    },
+    "service": {
+      "title": "Serviço premium",
+      "desc": "Concierge, limpeza, chef particular sob demanda"
+    },
+    "value": {
+      "title": "Tarifas transparentes",
+      "desc": "Preços por temporada, sem taxas ocultas"
+    },
+    "cta": "Pronto para viver a experiência Vila Caju?",
+    "ctaButton": "Reservar agora"
+  },
+  "pricing": {
+    "title": "A partir de",
+    "from": "a partir de",
+    "perNight": "/ noite",
+    "seeAllRates": "Ver todas as tarifas"
+  },
+  "villa": {
+    "pageTitle": "Vila Caju",
+    "intro": "Vila Caju é uma propriedade contemporânea de charme, situada entre coqueiros e o oceano. Com seus 6 quartos espaçosos, piscina privativa e espaços de convivência abertos, recebe até 17 pessoas em um cenário de exceção.",
+    "capacity": "Capacidade: 17 pessoas",
+    "roomsTitle": "Planta dos quartos",
+    "amenitiesTitle": "Comodidades",
+    "cta": "Convencido?",
+    "ctaButton": "Reservar a villa"
+  },
+  "destination": {
+    "pageTitle": "Pontal de Maceió",
+    "subtitle": "Capital mundial do kitesurf e segredo do Nordeste",
+    "intro": "Localizado no litoral norte de Alagoas, Pontal de Maceió é reconhecido internacionalmente como um dos melhores destinos de kitesurf do mundo — vento constante 300 dias por ano, lagoas rasas e spots para todos os níveis. Além do kite, esta vila de pescadores preservada do turismo de massa oferece águas cristalinas, piscinas naturais e gastronomia local excepcional.",
+    "activitiesTitle": "O que fazer",
+    "gettingThereTitle": "Como chegar",
+    "airport": "Aeroporto de Maceió (MCZ) — 25 km",
+    "transfer": "Transfer privativo organizado sob demanda",
+    "cta": "Reserve sua estadia em Pontal de Maceió",
+    "kitesurfBadge": "🏆 Top destino mundial de kitesurf"
+  },
+  "rates": {
+    "pageTitle": "Tarifas & Temporadas",
+    "subtitle": "Transparência total em nossos preços",
+    "peakSeason": "Altíssima temporada",
+    "highSeason": "Alta temporada",
+    "midSeason": "Média temporada",
+    "lowSeason": "Baixa temporada",
+    "closedSeason": "Fechamento anual",
+    "perNight": "/ noite",
+    "cleaningFee": "Taxa de limpeza",
+    "minStay": "Estadia mínima",
+    "nights": "noites",
+    "indicativeEur": "aproximadamente",
+    "calculatorTitle": "Estime sua estadia",
+    "cta": "Reservar com estas tarifas",
+    "paymentTitle": "Condições de pagamento",
+    "paymentDeposit": "Entrada na reserva",
+    "paymentBalance": "Saldo antes da chegada",
+    "paymentFull": "Pagamento integral na reserva",
+    "cancellationTitle": "Políticas de cancelamento",
+    "cancellationFull": "Reembolso integral",
+    "cancellationPartial": "Reembolso parcial",
+    "cancellationNone": "Não reembolsável",
+    "faqTitle": "Perguntas frequentes"
+  },
+  "booking": {
+    "pageTitle": "Reserve sua estadia",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Hóspedes",
+    "adults": "Adultos",
+    "children": "Crianças",
+    "name": "Nome completo",
+    "email": "Email",
+    "phone": "Telefone",
+    "message": "Mensagem (opcional)",
+    "estimatedPrice": "Preço estimado",
+    "total": "Total",
+    "summary": "Resumo",
+    "submit": "Enviar via WhatsApp",
+    "nights": "noites",
+    "backHome": "Voltar ao início",
+    "cancellationPolicy": "Política de cancelamento aplicável",
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "invalidEmail": "Email inválido",
+      "invalidPhone": "Telefone inválido",
+      "minStay": "Estadia mínima de {min} noites para este período",
+      "closedPeriod": "A villa está fechada neste período",
+      "maxGuests": "Máximo 17 pessoas"
+    }
+  },
+  "contact": {
+    "pageTitle": "Contato",
+    "subtitle": "Alguma dúvida? Respondemos em menos de 24h",
+    "whatsappLabel": "WhatsApp",
+    "whatsappDesc": "Resposta rápida 7 dias por semana",
+    "emailLabel": "Email",
+    "emailDesc": "Resposta em até 24h",
+    "addressLabel": "Endereço",
+    "hoursLabel": "Disponibilidade",
+    "hoursValue": "Todos os dias, 8h – 22h (horário de Brasília)"
+  },
+  "legal": {
+    "mentionsTitle": "Aviso legal",
+    "cgvTitle": "Termos e Condições",
+    "privacyTitle": "Política de privacidade",
+    "lastUpdated": "Última atualização"
+  },
+  "cookies": {
+    "message": "Usamos cookies para melhorar sua experiência.",
+    "accept": "Aceitar",
+    "decline": "Recusar",
+    "learnMore": "Saiba mais"
+  },
+  "footer": {
+    "tagline": "Sua fuga para o Nordeste brasileiro",
+    "legal": "Aviso legal",
+    "cgv": "T&C",
+    "privacy": "Privacidade",
+    "faq": "FAQ",
+    "contact": "Contato",
+    "copyright": "© {year} Vila Caju. Todos os direitos reservados.",
+    "whatsapp": "Fale conosco no WhatsApp"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "text": "A página que você procura não existe.",
+    "cta": "Voltar ao início"
+  },
+  "faq": {
+    "pageTitle": "Perguntas frequentes",
+    "subtitle": "Tudo o que você precisa saber antes de reservar a Vila Caju",
+    "cta": "Uma pergunta sem resposta?",
+    "ctaButton": "Entre em contato",
+    "categories": {
+      "villa": "A villa",
+      "booking": "Reserva",
+      "arrival": "Chegada & saída",
+      "activities": "Atividades & estadia"
+    }
+  }
+}

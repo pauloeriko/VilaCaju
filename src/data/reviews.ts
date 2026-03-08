@@ -1,0 +1,88 @@
+import type { Review } from "@/types";
+
+export const reviews: Review[] = [
+  {
+    id: "1",
+    name: "Marie & Philippe",
+    country: "France",
+    flag: "🇫🇷",
+    rating: 5,
+    source: "airbnb",
+    text: {
+      fr: "Un séjour absolument magique. La villa est encore plus belle qu'en photo. Le personnel est aux petits soins et la plage à deux pas est un paradis.",
+      en: "An absolutely magical stay. The villa is even more beautiful than in the photos. The staff is attentive and the nearby beach is paradise.",
+      pt: "Uma estadia absolutamente mágica. A villa é ainda mais bonita do que nas fotos. A equipe é atenciosa e a praia próxima é um paraíso.",
+    },
+    date: "2025-01",
+  },
+  {
+    id: "2",
+    name: "James & Sarah",
+    country: "United Kingdom",
+    flag: "🇬🇧",
+    rating: 5,
+    source: "airbnb",
+    text: {
+      fr: "Nous avons passé le réveillon ici avec 15 amis. L\'espace est généreux, la piscine divine et les couchers de soleil inoubliables.",
+      en: "We spent New Year\'s here with 15 friends. The space is generous, the pool is divine and the sunsets are unforgettable.",
+      pt: "Passamos o réveillon aqui com 15 amigos. O espaço é generoso, a piscina é divina e os pôres do sol são inesquecíveis.",
+    },
+    date: "2025-01",
+  },
+  {
+    id: "3",
+    name: "Ana & Roberto",
+    country: "Brasil",
+    flag: "🇧🇷",
+    rating: 5,
+    source: "google",
+    text: {
+      fr: "La meilleure villa que nous ayons louée au Brésil. Le rapport qualité-prix est imbattable pour un groupe de cette taille.",
+      en: "The best villa we\'ve rented in Brazil. The value for money is unbeatable for a group this size.",
+      pt: "A melhor villa que já alugamos no Brasil. O custo-benefício é imbatível para um grupo desse tamanho.",
+    },
+    date: "2024-07",
+  },
+  {
+    id: "4",
+    name: "Sophie & Marc",
+    country: "Belgique",
+    flag: "🇧🇪",
+    rating: 5,
+    source: "airbnb",
+    text: {
+      fr: "Pontal de Maceió est un joyau caché. Vila Caju est l\'endroit parfait pour en profiter. On reviendra !",
+      en: "Pontal de Maceió is a hidden gem. Vila Caju is the perfect place to enjoy it. We\'ll be back!",
+      pt: "Pontal de Maceió é uma joia escondida. Vila Caju é o lugar perfeito para aproveitar. Voltaremos!",
+    },
+    date: "2024-08",
+  },
+  {
+    id: "5",
+    name: "Lucas & Fernanda",
+    country: "Brasil",
+    flag: "🇧🇷",
+    rating: 5,
+    source: "google",
+    text: {
+      fr: "La cuisine est fantastique pour les groupes. Nous avons organisé des repas incroyables. Le chef sur demande est un plus inestimable.",
+      en: "The kitchen is fantastic for groups. We hosted incredible meals. The private chef option is an invaluable plus.",
+      pt: "A cozinha é fantástica para grupos. Preparamos refeições incríveis. O chef particular é um plus inestimável.",
+    },
+    date: "2024-12",
+  },
+  {
+    id: "6",
+    name: "Pierre & Isabelle",
+    country: "France",
+    flag: "🇫🇷",
+    rating: 5,
+    source: "direct",
+    text: {
+      fr: "Trois générations sous le même toit pour des vacances de rêve. Chaque chambre a sa salle de bain, un détail qui change tout.",
+      en: "Three generations under one roof for a dream vacation. Each room has its own bathroom, a detail that changes everything.",
+      pt: "Três gerações sob o mesmo teto para férias dos sonhos. Cada quarto tem seu banheiro, um detalhe que muda tudo.",
+    },
+    date: "2024-07",
+  },
+];

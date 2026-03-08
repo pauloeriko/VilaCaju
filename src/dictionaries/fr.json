@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "title": "Vila Caju — Villa de luxe à Pontal de Maceió, Brésil",
+    "description": "Villa contemporaine de luxe pour 17 personnes à Pontal de Maceió, dans le Nordeste brésilien. Piscine, jardin tropical, service premium."
+  },
+  "nav": {
+    "home": "Accueil",
+    "villa": "Vila",
+    "destination": "Destination",
+    "rates": "Tarifs",
+    "reviews": "Avis",
+    "book": "Réserver",
+    "bookCta": "Réserver maintenant",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "tagline": "VOTRE VILLA PRIVÉE AU BRÉSIL",
+    "title": "Vila Caju",
+    "subtitle": "17 personnes · Pontal de Maceió · Capitale mondiale du kitesurf",
+    "cta": "Découvrir la villa",
+    "ctaBook": "Réserver votre séjour",
+    "datepickerTitle": "Estimez votre séjour",
+    "checkIn": "Arrivée",
+    "checkOut": "Départ",
+    "seePrice": "Voir le prix"
+  },
+  "gallery": {
+    "title": "Un écrin de sérénité",
+    "subtitle": "Chaque espace a été pensé pour votre confort absolu"
+  },
+  "reviews": {
+    "title": "Ce qu’en disent nos hôtes",
+    "subtitle": "Des expériences inoubliables",
+    "pageTitle": "Avis de nos hôtes",
+    "pageSubtitle": "Ce que vivent réellement ceux qui séjournent à Vila Caju",
+    "allReviews": "Tous les avis",
+    "sourceAirbnb": "Via Airbnb",
+    "sourceGoogle": "Via Google",
+    "sourceDirect": "Séjour direct"
+  },
+  "usp": {
+    "title": "Pourquoi Vila Caju",
+    "capacity": {
+      "title": "17 personnes",
+      "desc": "Idéal pour les grands groupes et réunions familiales"
+    },
+    "location": {
+      "title": "Pontal de Maceió",
+      "desc": "L'une des meilleures destinations mondiales de kitesurf, entre lagunes turquoise et cocotiers"
+    },
+    "service": {
+      "title": "Service premium",
+      "desc": "Conciergerie, ménage, chef cuisinier sur demande"
+    },
+    "value": {
+      "title": "Tarifs transparents",
+      "desc": "Prix par saison, sans frais cachés"
+    },
+    "cta": "Prêt à vivre l’expérience Vila Caju ?",
+    "ctaButton": "Réserver maintenant"
+  },
+  "pricing": {
+    "title": "À partir de",
+    "from": "à partir de",
+    "perNight": "/ nuit",
+    "seeAllRates": "Voir tous les tarifs"
+  },
+  "villa": {
+    "pageTitle": "Vila Caju",
+    "intro": "Vila Caju est une propriété contemporaine de charme, nichée entre cocotiers et océan. Avec ses 6 chambres spacieuses, sa piscine privée et ses espaces de vie ouverts, elle accueille jusqu'à 17 personnes dans un cadre d'exception.",
+    "capacity": "Capacité : 17 personnes",
+    "roomsTitle": "Plan des chambres",
+    "amenitiesTitle": "Équipements",
+    "cta": "Convaincu ?",
+    "ctaButton": "Réserver la villa"
+  },
+  "destination": {
+    "pageTitle": "Pontal de Maceió",
+    "subtitle": "Capitale mondiale du kitesurf et secret du Nordeste",
+    "intro": "Situé sur la côte nord d'Alagoas, Pontal de Maceió est reconnu internationalement comme l'une des meilleures destinations de kitesurf au monde — vent constant 300 jours par an, lagunes peu profondes et spots pour tous niveaux. Au-delà du kite, ce village de pêcheurs préservé du tourisme de masse vous offre eaux turquoise, piscines naturelles et gastronomie locale exceptionnelle.",
+    "activitiesTitle": "Que faire sur place",
+    "gettingThereTitle": "Comment venir",
+    "airport": "Aéroport de Maceió (MCZ) — 25 km",
+    "transfer": "Transfert privé organisé sur demande",
+    "cta": "Réservez votre séjour à Pontal de Maceió",
+    "kitesurfBadge": "🏆 Top destination mondiale kitesurf"
+  },
+  "rates": {
+    "pageTitle": "Tarifs & Saisons",
+    "subtitle": "Transparence totale sur nos tarifs",
+    "peakSeason": "Très Haute saison",
+    "highSeason": "Haute saison",
+    "midSeason": "Moyenne saison",
+    "lowSeason": "Basse saison",
+    "closedSeason": "Fermeture annuelle",
+    "perNight": "/ nuit",
+    "cleaningFee": "Frais de ménage",
+    "minStay": "Séjour minimum",
+    "nights": "nuits",
+    "indicativeEur": "soit environ",
+    "calculatorTitle": "Estimez votre séjour",
+    "cta": "Réserver à ces tarifs",
+    "paymentTitle": "Conditions de paiement",
+    "paymentDeposit": "Acompte à la réservation",
+    "paymentBalance": "Solde avant arrivée",
+    "paymentFull": "Paiement intégral à la réservation",
+    "cancellationTitle": "Politiques d’annulation",
+    "cancellationFull": "Remboursement intégral",
+    "cancellationPartial": "Remboursement partiel",
+    "cancellationNone": "Non remboursable",
+    "faqTitle": "Questions fréquentes"
+  },
+  "booking": {
+    "pageTitle": "Réserver votre séjour",
+    "checkIn": "Arrivée",
+    "checkOut": "Départ",
+    "guests": "Voyageurs",
+    "adults": "Adultes",
+    "children": "Enfants",
+    "name": "Nom complet",
+    "email": "Email",
+    "phone": "Téléphone",
+    "message": "Message (optionnel)",
+    "estimatedPrice": "Prix estimé",
+    "total": "Total",
+    "summary": "Récapitulatif",
+    "submit": "Envoyer via WhatsApp",
+    "nights": "nuits",
+    "backHome": "Retour à l’accueil",
+    "cancellationPolicy": "Politique d’annulation applicable",
+    "errors": {
+      "required": "Ce champ est requis",
+      "invalidEmail": "Email invalide",
+      "invalidPhone": "Téléphone invalide",
+      "minStay": "Séjour minimum de {min} nuits pour cette période",
+      "closedPeriod": "La villa est fermée à cette période",
+      "maxGuests": "Maximum 17 personnes"
+    }
+  },
+  "contact": {
+    "pageTitle": "Contact",
+    "subtitle": "Une question ? Nous répondons en moins de 24h",
+    "whatsappLabel": "WhatsApp",
+    "whatsappDesc": "Réponse rapide 7j/7",
+    "emailLabel": "Email",
+    "emailDesc": "Réponse sous 24h",
+    "addressLabel": "Adresse",
+    "hoursLabel": "Disponibilité",
+    "hoursValue": "Tous les jours, 8h – 22h (heure de Brasília)"
+  },
+  "legal": {
+    "mentionsTitle": "Mentions légales",
+    "cgvTitle": "Conditions Générales de Vente",
+    "privacyTitle": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour"
+  },
+  "cookies": {
+    "message": "Nous utilisons des cookies pour améliorer votre expérience.",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "learnMore": "En savoir plus"
+  },
+  "footer": {
+    "tagline": "Votre évasion au Nordeste brésilien",
+    "legal": "Mentions légales",
+    "cgv": "CGV",
+    "privacy": "Confidentialité",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "copyright": "© {year} Vila Caju. Tous droits réservés.",
+    "whatsapp": "Nous contacter sur WhatsApp"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "La page que vous cherchez n’existe pas.",
+    "cta": "Retour à l’accueil"
+  },
+  "faq": {
+    "pageTitle": "Questions fréquentes",
+    "subtitle": "Tout ce que vous devez savoir avant de réserver Vila Caju",
+    "cta": "Une question sans réponse ?",
+    "ctaButton": "Contactez-nous",
+    "categories": {
+      "villa": "La villa",
+      "booking": "Réservation",
+      "arrival": "Arrivée & départ",
+      "activities": "Activités & séjour"
+    }
+  }
+}
