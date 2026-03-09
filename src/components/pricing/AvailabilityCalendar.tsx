@@ -180,15 +180,26 @@ function MonthGrid({
 interface AvailabilityCalendarProps {
   lang: Locale;
   onDatesChange?: (checkIn: string, checkOut: string) => void;
+  initialCheckIn?: string | null;
+  initialCheckOut?: string | null;
 }
 
 const TOTAL_MONTHS = 12;
 
-export default function AvailabilityCalendar({ lang, onDatesChange }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({ lang, onDatesChange, initialCheckIn, initialCheckOut }: AvailabilityCalendarProps) {
   const now = new Date();
-  const [offset, setOffset] = useState(0); // index du mois affiché (0 = mois courant)
-  const [checkIn, setCheckIn] = useState<string | null>(null);
-  const [checkOut, setCheckOut] = useState<string | null>(null);
+
+  // Naviguer directement vers le mois de la date d'arrivée si elle est fournie
+  const initialOffset = (() => {
+    if (!initialCheckIn) return 0;
+    const ci = new Date(initialCheckIn);
+    const diff = (ci.getFullYear() - now.getFullYear()) * 12 + (ci.getMonth() - now.getMonth());
+    return Math.max(0, Math.min(diff, TOTAL_MONTHS - 1));
+  })();
+
+  const [offset, setOffset] = useState(initialOffset);
+  const [checkIn, setCheckIn] = useState<string | null>(initialCheckIn ?? null);
+  const [checkOut, setCheckOut] = useState<string | null>(initialCheckOut ?? null);
   const [hoverDate, setHoverDate] = useState<string | null>(null);
   const labels = LABELS[lang];
 

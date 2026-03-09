@@ -21,16 +21,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/[lang]/page.js"
     ],
-    "/[lang]/reserver/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[lang]/reserver/layout.js"
-    ],
-    "/[lang]/reserver/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[lang]/reserver/page.js"
-    ],
     "/[lang]/tarifs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

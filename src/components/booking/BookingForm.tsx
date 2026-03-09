@@ -97,8 +97,10 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
   defaultCheckout.setDate(defaultCheckout.getDate() + 3);
 
   // Pré-remplissage depuis les query params (ex: /reserver?checkIn=2026-07-01&checkOut=2026-07-08)
-  const urlCheckIn  = searchParams.get("checkIn")  ?? tomorrow.toISOString().split("T")[0];
-  const urlCheckOut = searchParams.get("checkOut") ?? defaultCheckout.toISOString().split("T")[0];
+  const calendarInitialCheckIn  = searchParams.get("checkIn");
+  const calendarInitialCheckOut = searchParams.get("checkOut");
+  const urlCheckIn  = calendarInitialCheckIn  ?? tomorrow.toISOString().split("T")[0];
+  const urlCheckOut = calendarInitialCheckOut ?? defaultCheckout.toISOString().split("T")[0];
 
   const [form, setForm] = useState<FormState>({
     checkIn: urlCheckIn,
@@ -290,7 +292,12 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
         <div className="lg:sticky lg:top-24 space-y-6">
         {/* Calendrier de disponibilité */}
         <div className="card-organic p-6">
-          <AvailabilityCalendar lang={lang} onDatesChange={handleCalendarDatesChange} />
+          <AvailabilityCalendar
+            lang={lang}
+            onDatesChange={handleCalendarDatesChange}
+            initialCheckIn={calendarInitialCheckIn}
+            initialCheckOut={calendarInitialCheckOut}
+          />
         </div>
 
         {/* Récapitulatif */}

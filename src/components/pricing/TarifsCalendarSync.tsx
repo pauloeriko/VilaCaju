@@ -38,9 +38,7 @@ export default function TarifsCalendarSync({
   const handleDatesChange = useCallback((checkIn: string, checkOut: string) => {
     setCalendarCheckIn(checkIn);
     setCalendarCheckOut(checkOut);
-    // Scroll fluide vers le calculateur
-    const el = document.getElementById("price-calculator");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Pas de scroll — le calculateur est visible côte à côte
   }, []);
 
   return (
@@ -58,27 +56,27 @@ export default function TarifsCalendarSync({
         </div>
       </div>
 
-      {/* 2. Calendrier de disponibilité */}
+      {/* 2 + 4. Calendrier de disponibilité + Estimez votre séjour — côte à côte */}
       <div className="px-6 md:px-8 py-10 md:py-14">
         <div className="max-w-6xl mx-auto">
-          <AvailabilityCalendar lang={lang} onDatesChange={handleDatesChange} />
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-8 items-stretch">
+            <div className="card-organic p-6 h-full">
+              <AvailabilityCalendar lang={lang} onDatesChange={handleDatesChange} />
+            </div>
+            <div id="price-calculator" className="h-full [&>div]:h-full">
+              <PriceCalculator
+                lang={lang}
+                dict={dict}
+                externalCheckIn={calendarCheckIn}
+                externalCheckOut={calendarCheckOut}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 3. Prix des saisons */}
       {priceCards}
-
-      {/* 4. Estimez votre séjour */}
-      <div id="price-calculator" className="bg-sand-100 px-6 md:px-8 py-10 md:py-14">
-        <div className="max-w-xl mx-auto">
-          <PriceCalculator
-            lang={lang}
-            dict={dict}
-            externalCheckIn={calendarCheckIn}
-            externalCheckOut={calendarCheckOut}
-          />
-        </div>
-      </div>
 
       {/* 5. Conditions de paiement */}
       {paymentSection}
