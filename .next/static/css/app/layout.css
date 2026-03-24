@@ -387,7 +387,6 @@
     --color-ocean-300: #6BB8D4;
     --color-ocean-400: #3A9BBF;
     --color-ocean-500: #2080A5;
-    --color-ocean-600: #1A6B8A;
     --color-charcoal-700: #3D3833;
     --color-charcoal-800: #2A2520;
     --color-charcoal-900: #1A1715;
@@ -723,9 +722,6 @@
   .aspect-\[4\/3\] {
     aspect-ratio: 4/3;
   }
-  .h-1\.5 {
-    height: calc(var(--spacing) * 1.5);
-  }
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
@@ -794,9 +790,6 @@
   }
   .min-h-screen {
     min-height: 100vh;
-  }
-  .w-1\.5 {
-    width: calc(var(--spacing) * 1.5);
   }
   .w-2 {
     width: calc(var(--spacing) * 2);
@@ -1165,12 +1158,6 @@
   }
   .bg-\[\#D3D3D3\] {
     background-color: #D3D3D3;
-  }
-  .bg-\[\#FF5A5F\] {
-    background-color: #FF5A5F;
-  }
-  .bg-\[\#FF5A5F\]\/10 {
-    background-color: color-mix(in oklab, #FF5A5F 10%, transparent);
   }
   .bg-amber-50 {
     background-color: var(--color-amber-50);
@@ -1617,9 +1604,6 @@
   .text-\[\#888\] {
     color: #888;
   }
-  .text-\[\#FF5A5F\] {
-    color: #FF5A5F;
-  }
   .text-amber-500 {
     color: var(--color-amber-500);
   }
@@ -1682,9 +1666,6 @@
   }
   .text-ocean-500 {
     color: var(--color-ocean-500);
-  }
-  .text-ocean-600 {
-    color: var(--color-ocean-600);
   }
   .text-red-400 {
     color: var(--color-red-400);

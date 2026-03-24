@@ -1,10 +1,26 @@
 "use client";
 
-import React from "react";
-import { cn } from "@/lib/utils";
+import React, { useState } from "react";
+import { Star, ChevronDown, ChevronUp } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Review } from "@/types";
+
+// Aligné sur ReviewsSection (landing page)
+const MAX_CHARS = 210;
+
+const expandLabels: Record<Locale, { more: string; less: string }> = {
+  fr: { more: "Lire la suite", less: "Réduire" },
+  en: { more: "Read more",    less: "Show less" },
+  pt: { more: "Ler mais",     less: "Recolher" },
+};
+
+function formatReviewDate(dateStr: string, lang: Locale): string {
+  const [year, month] = dateStr.split("-");
+  const date = new Date(Number(year), Number(month) - 1, 1);
+  const locale = lang === "fr" ? "fr-FR" : lang === "pt" ? "pt-BR" : "en-US";
+  return date.toLocaleDateString(locale, { month: "long", year: "numeric" });
+}
 
 interface ReviewsGridProps {
   reviews: Review[];
@@ -12,73 +28,77 @@ interface ReviewsGridProps {
   dict: Dictionary["reviews"];
 }
 
-const sourceStyles = {
-  airbnb: { bg: "bg-[#FF5A5F]/10", text: "text-[#FF5A5F]", dot: "bg-[#FF5A5F]" },
-  google:  { bg: "bg-ocean-50",     text: "text-ocean-600",   dot: "bg-ocean-500" },
-  direct:  { bg: "bg-sand-100",     text: "text-sand-700",    dot: "bg-sand-500"  },
-};
+interface ReviewCardProps {
+  review: Review;
+  lang: Locale;
+}
 
-function SourceBadge({
-  source,
-  dict,
-}: {
-  source: Review["source"];
-  dict: Dictionary["reviews"];
-}) {
-  const style = sourceStyles[source];
-  const label =
-    source === "airbnb" ? dict.sourceAirbnb
-    : source === "google" ? dict.sourceGoogle
-    : dict.sourceDirect;
+function ReviewCard({ review, lang }: ReviewCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const text = review.text[lang];
+  const isLong = text.length > MAX_CHARS;
+  const displayText =
+    isLong && !expanded ? text.slice(0, MAX_CHARS).trimEnd() + "…" : text;
+  const labels = expandLabels[lang];
 
   return (
-    <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold", style.bg, style.text)}>
-      <span className={cn("w-1.5 h-1.5 rounded-full", style.dot)} />
-      {label}
-    </span>
+    <div className="card-organic p-6 flex flex-col h-full hover:shadow-natural-lg transition-shadow">
+      {/* 1. Drapeau + Nom */}
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-xl leading-none">{review.flag}</span>
+        <p className="font-body font-semibold text-charcoal-800 text-sm">
+          {review.name}
+        </p>
+      </div>
+
+      {/* 2. Date + Lieu */}
+      <p className="font-body text-charcoal-400 text-xs mb-3">
+        {review.country}&nbsp;·&nbsp;{formatReviewDate(review.date, lang)}
+      </p>
+
+      {/* 3. Étoiles */}
+      <div className="flex gap-0.5 mb-4">
+        {Array.from({ length: review.rating }).map((_, i) => (
+          <Star
+            key={i}
+            className="w-3.5 h-3.5 fill-terracotta-400 text-terracotta-400"
+          />
+        ))}
+      </div>
+
+      {/* 4. Texte + bouton expand */}
+      <div className="flex-1 flex flex-col">
+        <p className="font-body text-charcoal-700 text-sm leading-relaxed flex-1">
+          &ldquo;{displayText}&rdquo;
+        </p>
+        {isLong && (
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            className="flex items-center gap-1 text-terracotta-600 text-xs font-semibold mt-3 hover:text-terracotta-700 transition-colors self-start"
+          >
+            {expanded ? (
+              <>
+                <ChevronUp className="w-3.5 h-3.5" />
+                {labels.less}
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-3.5 h-3.5" />
+                {labels.more}
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
-export default function ReviewsGrid({ reviews, lang, dict }: ReviewsGridProps) {
+export default function ReviewsGrid({ reviews, lang }: ReviewsGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       {reviews.map((review) => (
-        <div
-          key={review.id}
-          className="card-organic p-6 flex flex-col gap-4 hover:shadow-natural-lg transition-shadow"
-        >
-          {/* En-tête : badge source + étoiles */}
-          <div className="flex items-center justify-between">
-            <SourceBadge source={review.source} dict={dict} />
-            <div className="flex gap-0.5">
-              {Array.from({ length: review.rating }).map((_, i) => (
-                <span key={i} className="text-terracotta-400 text-sm">★</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Texte */}
-          <p className="text-charcoal-700/80 text-sm leading-relaxed italic flex-1">
-            &ldquo;{review.text[lang]}&rdquo;
-          </p>
-
-          {/* Auteur */}
-          <div className="flex items-center justify-between pt-3 border-t border-sand-200">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{review.flag}</span>
-              <div>
-                <p className="font-semibold text-charcoal-800 text-sm">{review.name}</p>
-                <p className="text-charcoal-700/50 text-xs">{review.country}</p>
-              </div>
-            </div>
-            <p className="text-charcoal-700/40 text-xs">
-              {new Date(review.date + "-01").toLocaleDateString(
-                lang === "fr" ? "fr-FR" : lang === "pt" ? "pt-BR" : "en-US",
-                { month: "long", year: "numeric" }
-              )}
-            </p>
-          </div>
-        </div>
+        <ReviewCard key={review.id} review={review} lang={lang} />
       ))}
     </div>
   );
