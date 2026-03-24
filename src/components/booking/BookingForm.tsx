@@ -2,10 +2,11 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { MessageCircle, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import { MessageCircle, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle } from "lucide-react";
 import { calculatePrice } from "@/lib/pricing/calculator";
 import { formatCurrency, brlToEur, buildWhatsAppUrl } from "@/lib/utils";
 import { pricingConfig } from "@/lib/pricing/seasons";
+import { rangeContainsUnavailable } from "@/lib/pricing/availability";
 import { cancellationPolicies, type CancellationPolicy } from "@/data/policies";
 import type { SeasonType } from "@/lib/pricing/types";
 import type { Locale } from "@/lib/i18n/config";
@@ -115,6 +116,31 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
 
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
+  const MIN_NIGHTS = 3;
+
+  // Validation : dates occupées ou fermeture annuelle dans la plage
+  const rangeError = useMemo(() => {
+    if (!form.checkIn || !form.checkOut) return false;
+    const ci = new Date(form.checkIn);
+    const co = new Date(form.checkOut);
+    if (co <= ci) return false;
+    return rangeContainsUnavailable(form.checkIn, form.checkOut);
+  }, [form.checkIn, form.checkOut]);
+
+  // Le formulaire est complet quand tous les champs requis sont remplis
+  const isFormComplete = useMemo(() => (
+    form.name.trim() !== "" &&
+    form.email.trim() !== "" &&
+    form.phone.trim() !== ""
+  ), [form.name, form.email, form.phone]);
+
+  const nightsCount = useMemo(() => {
+    if (!form.checkIn || !form.checkOut) return 0;
+    const ci = new Date(form.checkIn);
+    const co = new Date(form.checkOut);
+    return Math.max(0, Math.round((co.getTime() - ci.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [form.checkIn, form.checkOut]);
+
   const breakdown = useMemo(() => {
     if (!form.checkIn || !form.checkOut) return null;
     const ci = new Date(form.checkIn);
@@ -138,7 +164,10 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
     if (!form.phone.trim()) errs.phone = dict.errors.required;
     if (form.adults + form.children > pricingConfig.maxGuests)
       errs.adults = dict.errors.maxGuests;
-    if (breakdown?.hasClosedDays) errs.checkIn = dict.errors.closedPeriod;
+    if (breakdown?.hasClosedDays || rangeError) errs.checkIn = dict.errors.closedPeriod;
+    if (nightsCount > 0 && nightsCount < MIN_NIGHTS) {
+      errs.checkIn = dict.errors.minStay.replace("{min}", String(MIN_NIGHTS));
+    }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -148,19 +177,64 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
     e.preventDefault();
     if (!validate()) return;
 
+    // Libellés localisés du message WhatsApp
+    const labels = {
+      fr: {
+        title:    "*Nouvelle demande de réservation — Vila Caju*",
+        checkIn:  "Arrivée",
+        checkOut: "Départ",
+        guests:   (a: number, c: number) => `${a} adulte${a > 1 ? "s" : ""}${c > 0 ? `, ${c} enfant${c > 1 ? "s" : ""}` : ""}`,
+        name:     "Nom",
+        email:    "Email",
+        phone:    "Tél",
+        msg:      "Message",
+        total:    "Total estimé",
+      },
+      en: {
+        title:    "*New booking request — Vila Caju*",
+        checkIn:  "Check-in",
+        checkOut: "Check-out",
+        guests:   (a: number, c: number) => `${a} adult${a > 1 ? "s" : ""}${c > 0 ? `, ${c} child${c > 1 ? "ren" : ""}` : ""}`,
+        name:     "Name",
+        email:    "Email",
+        phone:    "Phone",
+        msg:      "Message",
+        total:    "Estimated total",
+      },
+      pt: {
+        title:    "*Nova solicitação de reserva — Vila Caju*",
+        checkIn:  "Chegada",
+        checkOut: "Saída",
+        guests:   (a: number, c: number) => `${a} adulto${a > 1 ? "s" : ""}${c > 0 ? `, ${c} criança${c > 1 ? "s" : ""}` : ""}`,
+        name:     "Nome",
+        email:    "Email",
+        phone:    "Tel",
+        msg:      "Mensagem",
+        total:    "Total estimado",
+      },
+    } as const;
+
+    const l = labels[lang];
+
     const message = [
-      `*Nova reserva Vila Caju*`,
+      l.title,
       ``,
-      `Chegada: ${form.checkIn}`,
-      `Sa\u00edda: ${form.checkOut}`,
-      `H\u00f3spedes: ${form.adults} adultos, ${form.children} crian\u00e7as`,
+      `${l.checkIn}: ${form.checkIn}`,
+      `${l.checkOut}: ${form.checkOut}`,
+      `${l.guests(form.adults, form.children)}`,
       ``,
-      `Nome: ${form.name}`,
-      `Email: ${form.email}`,
-      `Tel: ${form.phone}`,
-      form.message ? `Mensagem: ${form.message}` : "",
+      `${l.name}: ${form.name}`,
+      `${l.email}: ${form.email}`,
+      `${l.phone}: ${form.phone}`,
+      form.message ? `${l.msg}: ${form.message}` : "",
       ``,
-      breakdown ? `Total estimado: ${formatCurrency(breakdown.total, "BRL", lang)}` : "",
+      breakdown
+        ? `${l.total}: ${
+            lang === "pt"
+              ? formatCurrency(breakdown.total, "BRL", lang)
+              : formatCurrency(brlToEur(breakdown.total), "EUR", lang)
+          }`
+        : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -281,7 +355,48 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
           </div>
         </div>
 
-        <Button type="submit" variant="whatsapp" size="lg" className="w-full">
+        {/* Alerte durée minimale */}
+        {nightsCount > 0 && nightsCount < MIN_NIGHTS && !rangeError && (
+          <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-soft px-4 py-3">
+            <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-700 font-medium">
+              {dict.errors.minStay.replace("{min}", String(MIN_NIGHTS))}
+            </p>
+          </div>
+        )}
+
+        {/* Alerte dates non disponibles */}
+        {rangeError && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3">
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-700 font-medium">
+              {lang === "fr"
+                ? "Cette période contient des dates déjà réservées ou en fermeture annuelle."
+                : lang === "pt"
+                ? "Este período contém datas já reservadas ou em fechamento anual."
+                : "This period contains already booked or closed dates."}
+            </p>
+          </div>
+        )}
+
+        {/* Indicateur champs manquants */}
+        {!isFormComplete && (
+          <p className="text-sm text-charcoal-400 text-center">
+            {lang === "fr"
+              ? "Remplissez tous les champs pour envoyer votre demande."
+              : lang === "pt"
+              ? "Preencha todos os campos para enviar sua solicitação."
+              : "Fill in all fields to send your request."}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          variant="whatsapp"
+          size="lg"
+          className="w-full"
+          disabled={!isFormComplete || rangeError || (nightsCount > 0 && nightsCount < MIN_NIGHTS)}
+        >
           <MessageCircle className="w-5 h-5" />
           {dict.submit}
         </Button>
@@ -308,35 +423,33 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
 
           {breakdown && breakdown.nights > 0 ? (
             <div className="space-y-3">
-              {breakdown.nightlyBreakdown.map((item, i) => (
-                <div key={i} className="flex justify-between text-sm text-charcoal-700">
-                  <span>
-                    {item.label} ({item.nights} {dict.nights})
-                  </span>
-                  <span>{formatCurrency(item.subtotal, "BRL", lang)}</span>
-                </div>
-              ))}
+              {(() => {
+                // FR/EN → EUR en principal, PT → BRL en principal
+                const isPt = lang === "pt";
+                const primary   = (brl: number) => isPt ? formatCurrency(brl, "BRL", lang) : formatCurrency(brlToEur(brl), "EUR", lang);
+                const secondary = (brl: number) => isPt ? `~${formatCurrency(brlToEur(brl), "EUR", lang)}` : `~${formatCurrency(brl, "BRL", lang)}`;
 
-              <div className="flex justify-between text-sm text-charcoal-700/60">
-                <span>
-                  {lang === "fr"
-                    ? "Frais de m\u00e9nage"
-                    : lang === "pt"
-                    ? "Taxa de limpeza"
-                    : "Cleaning fee"}
-                </span>
-                <span>{formatCurrency(breakdown.cleaningFee, "BRL", lang)}</span>
-              </div>
+                return (
+                  <>
+                    {breakdown.nightlyBreakdown.map((item, i) => (
+                      <div key={i} className="flex justify-between text-sm text-charcoal-700">
+                        <span>{item.label} ({item.nights} {dict.nights})</span>
+                        <span>{primary(item.subtotal)}</span>
+                      </div>
+                    ))}
 
-              <div className="border-t border-sand-200 pt-3 flex justify-between font-bold text-charcoal-800">
-                <span>{dict.total}</span>
-                <div className="text-right">
-                  <div>{formatCurrency(breakdown.total, "BRL", lang)}</div>
-                  <div className="text-sm font-normal text-sand-500">
-                    ~{formatCurrency(brlToEur(breakdown.total), "EUR", lang)}
-                  </div>
-                </div>
-              </div>
+                    <div className="border-t border-sand-200 pt-3 flex justify-between font-bold text-charcoal-800">
+                      <span>{dict.total}</span>
+                      <div className="text-right">
+                        <div>{primary(breakdown.total)}</div>
+                        <div className="text-sm font-normal text-sand-500">
+                          {secondary(breakdown.total)}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
 
               {/* Politique d'annulation applicable */}
               {applicablePolicy && (

@@ -6,8 +6,9 @@ import {
   Waves, TreePalm, Armchair, Flame,
   UtensilsCrossed, Coffee, Wine, ChefHat,
   Tv, Wifi, Music, Gamepad2,
-  SprayCan, Car, ShieldCheck, Plane,
+  SprayCan, Car, Plane, Route,
 } from "lucide-react";
+import HorseIcon from "@/components/ui/HorseIcon";
 import { amenityCategories } from "@/data/villa";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -15,7 +16,8 @@ const iconMap: Record<string, React.ElementType> = {
   Waves, TreePalm, Armchair, Flame,
   UtensilsCrossed, Coffee, Wine, ChefHat,
   Tv, Wifi, Music, Gamepad2,
-  SprayCan, Car, ShieldCheck, Plane,
+  SprayCan, Car, Plane, Route,
+  Footprints: HorseIcon,
   ConciergeBell: ChefHat,
 };
 

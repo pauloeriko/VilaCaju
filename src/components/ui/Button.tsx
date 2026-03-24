@@ -16,6 +16,7 @@ interface ButtonProps {
   className?: string;
   type?: "button" | "submit";
   external?: boolean;
+  disabled?: boolean;
 }
 
 const variantClasses: Record<string, string> = {
@@ -44,9 +45,11 @@ export default function Button({
   className,
   type = "button",
   external,
+  disabled = false,
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer",
+    "inline-flex items-center justify-center gap-2 transition-all duration-300",
+    disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer",
     variantClasses[variant],
     sizeClasses[size],
     className
@@ -84,9 +87,10 @@ export default function Button({
     <motion.button
       type={type}
       onClick={onClick}
+      disabled={disabled}
       className={classes}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={disabled ? {} : { scale: 1.02 }}
+      whileTap={disabled ? {} : { scale: 0.98 }}
     >
       {children}
     </motion.button>

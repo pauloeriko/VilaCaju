@@ -19,9 +19,9 @@ const faqItems: FaqItem[] = [
       pt: "O que está incluído no preço exibido?",
     },
     answer: {
-      fr: "Le prix inclut la location de la villa, le linge de maison, le ménage de fin de séjour (800 BRL), l'accès à la piscine, le WiFi et la climatisation dans toutes les chambres. Les transferts aéroport et le chef cuisinier sont disponibles en option.",
-      en: "The price includes villa rental, bed linen, end-of-stay cleaning (800 BRL), pool access, WiFi and air conditioning in all rooms. Airport transfers and private chef are available as options.",
-      pt: "O preço inclui aluguel da villa, roupa de cama, limpeza de fim de estadia (800 BRL), acesso à piscina, WiFi e ar-condicionado em todos os quartos. Transfer aeroporto e chef particular são opções disponíveis.",
+      fr: "Le prix inclut la location de la villa, le linge de maison, le ménage de fin de séjour (800 BRL), l'accès à la piscine, le WiFi.",
+      en: "The price includes villa rental, bed linen, end-of-stay cleaning (800 BRL), pool access and WiFi.",
+      pt: "O preço inclui aluguel da villa, roupa de cama, limpeza de fim de estadia (800 BRL), acesso à piscina e WiFi.",
     },
   },
   {
@@ -31,9 +31,9 @@ const faqItems: FaqItem[] = [
       pt: "Como funciona o pagamento?",
     },
     answer: {
-      fr: "Selon la saison, un acompte de 30 à 40% est requis à la réservation (100% pour le Réveillon). Le solde est réglé 30 à 45 jours avant l'arrivée. Le paiement s'effectue par virement bancaire ou Stripe.",
-      en: "Depending on the season, a deposit of 30–40% is required at booking (100% for New Year's Eve). The balance is due 30–45 days before arrival. Payment is made by bank transfer or Stripe.",
-      pt: "Dependendo da temporada, um depósito de 30–40% é necessário na reserva (100% para o Réveillon). O saldo vence 30–45 dias antes da chegada. O pagamento é feito por transferência bancária ou Stripe.",
+      fr: "Selon la saison, un acompte de 30 à 40% est requis à la réservation. Le solde est réglé 30 à 45 jours avant l'arrivée. Le paiement s'effectue par virement bancaire ou Stripe.",
+      en: "Depending on the season, a deposit of 30–40% is required at booking. The balance is due 30–45 days before arrival. Payment is made by bank transfer or Stripe.",
+      pt: "Dependendo da temporada, um depósito de 30–40% é necessário na reserva. O saldo vence 30–45 dias antes da chegada. O pagamento é feito por transferência bancária ou Stripe.",
     },
   },
   {
@@ -43,9 +43,9 @@ const faqItems: FaqItem[] = [
       pt: "Posso cancelar minha reserva?",
     },
     answer: {
-      fr: "Les conditions d'annulation varient selon la saison. En basse saison, annulation gratuite jusqu'à 45 jours avant l'arrivée. En haute saison, jusqu'à 60 jours. Le Réveillon est non remboursable. Consultez la section 'Politiques d'annulation' pour le détail complet.",
-      en: "Cancellation conditions vary by season. In low season, free cancellation up to 45 days before arrival. In high season, up to 60 days. New Year's Eve is non-refundable. See the 'Cancellation policies' section for full details.",
-      pt: "As condições de cancelamento variam por temporada. Na baixa temporada, cancelamento gratuito até 45 dias antes da chegada. Na alta temporada, até 60 dias. O Réveillon não é reembolsável. Veja a seção 'Políticas de cancelamento' para detalhes.",
+      fr: "Les conditions d'annulation varient selon la saison. En basse saison, annulation gratuite jusqu'à 45 jours avant l'arrivée. En haute saison, jusqu'à 60 jours. Consultez la section 'Politiques d'annulation' pour le détail complet.",
+      en: "Cancellation conditions vary by season. In low season, free cancellation up to 45 days before arrival. In high season, up to 60 days. See the 'Cancellation policies' section for full details.",
+      pt: "As condições de cancelamento variam por temporada. Na baixa temporada, cancelamento gratuito até 45 dias antes da chegada. Na alta temporada, até 60 dias. Veja a seção 'Políticas de cancelamento' para detalhes.",
     },
   },
   {
@@ -67,9 +67,9 @@ const faqItems: FaqItem[] = [
       pt: "Quantas pessoas a villa comporta?",
     },
     answer: {
-      fr: "La vila Caju accueille jusqu'à 17 personnes dans ses 6 chambres. Chaque chambre dispose de sa propre salle de bain. La villa est idéale pour les grandes familles, groupes d'amis et séminaires privés.",
-      en: "Vila Caju accommodates up to 17 guests in its 6 bedrooms. Each room has its own bathroom. The villa is ideal for large families, groups of friends and private seminars.",
-      pt: "Vila Caju acomoda até 17 pessoas em seus 6 quartos. Cada quarto tem seu próprio banheiro. A villa é ideal para famílias grandes, grupos de amigos e seminários privados.",
+      fr: "Vila Caju accueille jusqu'à 17 personnes dans ses 7 chambres. Chaque chambre dispose de sa propre salle de bain. La villa est idéale pour les grandes familles, groupes d'amis et séminaires privés.",
+      en: "Vila Caju accommodates up to 17 guests in its 7 bedrooms. Each room has its own bathroom. The villa is ideal for large families, groups of friends and private seminars.",
+      pt: "Vila Caju acomoda até 17 pessoas em seus 7 quartos. Cada quarto tem seu próprio banheiro. A villa é ideal para famílias grandes, grupos de amigos e seminários privados.",
     },
   },
   {
@@ -79,9 +79,9 @@ const faqItems: FaqItem[] = [
       pt: "Como chego à villa do aeroporto?",
     },
     answer: {
-      fr: "L'aéroport de Maceió (MCZ) est à 25 km. Nous organisons des transferts privés sur demande. Comptez environ 30–40 minutes de trajet selon la circulation.",
-      en: "Maceió Airport (MCZ) is 25 km away. We arrange private transfers on request. Journey time is approximately 30–40 minutes depending on traffic.",
-      pt: "O aeroporto de Maceió (MCZ) fica a 25 km. Organizamos transfers privativos sob demanda. O tempo de viagem é de aproximadamente 30–40 minutos dependendo do tráfego.",
+      fr: "L'aéroport international de Fortaleza (FOR) est à environ 180 km. Nous organisons des transferts privés sur demande (option). La location de véhicule sur place est également possible.",
+      en: "Fortaleza International Airport (FOR) is about 180 km away. We arrange private transfers on request (option). Car rental on-site is also possible.",
+      pt: "O aeroporto internacional de Fortaleza (FOR) fica a cerca de 180 km. Organizamos transfers privativos sob demanda (opção). O aluguel de carro local também é possível.",
     },
   },
 ];

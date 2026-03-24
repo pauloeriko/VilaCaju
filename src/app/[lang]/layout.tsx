@@ -5,7 +5,6 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { CurrencyProvider } from "@/lib/currency/CurrencyContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import CookieBanner from "@/components/ui/CookieBanner";
 
 export function generateStaticParams() {
@@ -32,7 +31,6 @@ export default async function LangLayout({
       <Navbar lang={lang as Locale} dict={dict.nav} />
       <main className="min-h-screen pt-16 md:pt-20">{children}</main>
       <Footer lang={lang as Locale} dict={dict.footer} />
-      <WhatsAppFab />
       <CookieBanner lang={lang as Locale} dict={dict.cookies} />
     </CurrencyProvider>
   );

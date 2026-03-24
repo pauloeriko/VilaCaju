@@ -3,8 +3,9 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Plane, MapPin } from "lucide-react";
 import {
-  Waves, Fish, Sailboat, UtensilsCrossed, TreePalm, Sunset, Wind,
+  Waves, Fish, Sailboat, UtensilsCrossed, TreePalm, Route, Wind,
 } from "lucide-react";
+import HorseIcon from "@/components/ui/HorseIcon";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { type Locale, locales } from "@/lib/i18n/config";
 import SectionWrapper from "@/components/ui/SectionWrapper";
@@ -12,7 +13,8 @@ import Button from "@/components/ui/Button";
 import { activities } from "@/data/destination";
 
 const iconMap: Record<string, React.ElementType> = {
-  Waves, Fish, Sailboat, UtensilsCrossed, TreePalm, Sunset, Wind,
+  Waves, Fish, Sailboat, UtensilsCrossed, TreePalm, Route, Wind,
+  Footprints: HorseIcon,
 };
 
 export function generateStaticParams() {
@@ -149,6 +151,22 @@ export default async function DestinationPage({
             </div>
             <p className="text-charcoal-700">{dict.destination.transfer}</p>
           </div>
+          <a
+            href="https://maps.app.goo.gl/A5EBLDqpGGYxqDYw6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 card-organic p-5 hover:shadow-natural-lg transition-shadow group"
+          >
+            <div className="w-10 h-10 rounded-full bg-sand-100 flex items-center justify-center shrink-0">
+              <MapPin className="w-5 h-5 text-sand-600" />
+            </div>
+            <div>
+              <p className="text-charcoal-700 text-sm">{dict.destination.address}</p>
+              <p className="text-terracotta-500 text-xs font-medium mt-0.5 group-hover:underline">
+                {dict.destination.mapsLabel}
+              </p>
+            </div>
+          </a>
         </div>
       </SectionWrapper>
 

@@ -36,50 +36,34 @@ export default async function RatesPage({
   const { lang } = await params;
   const dict = await getDictionary(lang as Locale);
 
-  // ── 3. Prix des saisons ────────────────────────────────────────────────
+  // ── Cartes de prix ────────────────────────────────────────────────────
   const priceCards = (
     <SectionWrapper>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Basse saison : Juin + 1 Sep – 15 Oct */}
         <PriceCard
           title={dict.rates.lowSeason}
           seasonType="low"
           periods={[
+            { dates: lang === "fr" ? "Juin" : lang === "pt" ? "Junho" : "June" },
             {
               dates:
                 lang === "fr"
-                  ? "26 Fév – 31 Mai"
+                  ? "1 Sep – 15 Oct"
                   : lang === "pt"
-                  ? "26 Fev – 31 Mai"
-                  : "Feb 26 – May 31",
-              label:
-                lang === "fr"
-                  ? "Mars, Avril, Mai"
-                  : lang === "pt"
-                  ? "Março, Abril, Maio"
-                  : "March, April, May",
-            },
-            {
-              dates:
-                lang === "fr"
-                  ? "Août – Novembre"
-                  : lang === "pt"
-                  ? "Agosto – Novembro"
-                  : "August – November",
-              label:
-                lang === "fr"
-                  ? "4 mois consécutifs"
-                  : lang === "pt"
-                  ? "4 meses consecutivos"
-                  : "4 consecutive months",
+                  ? "1 Set – 15 Out"
+                  : "Sep 1 – Oct 15",
             },
           ]}
-          pricePerNight={2200}
-          minStay={2}
+          pricePerNight={5400}
+          minStay={3}
           lang={lang as Locale}
           perNightLabel={dict.rates.perNight}
           minStayLabel={dict.rates.minStay}
           nightsLabel={dict.rates.nights}
         />
+
+        {/* Moyenne saison : Juil + Août + 16 Oct – 15 Déc */}
         <PriceCard
           title={dict.rates.midSeason}
           seasonType="mid"
@@ -87,35 +71,29 @@ export default async function RatesPage({
             {
               dates:
                 lang === "fr"
-                  ? "11 Jan – 9 Fév"
+                  ? "Juillet – Août"
                   : lang === "pt"
-                  ? "11 Jan – 9 Fev"
-                  : "Jan 11 – Feb 9",
-              label:
-                lang === "fr"
-                  ? "Après le Réveillon"
-                  : lang === "pt"
-                  ? "Após o Réveillon"
-                  : "After New Year",
+                  ? "Julho – Agosto"
+                  : "July – August",
             },
             {
               dates:
-                lang === "fr" ? "Juin" : lang === "pt" ? "Junho" : "June",
-              label:
                 lang === "fr"
-                  ? "Mois entier"
+                  ? "16 Oct – 15 Déc"
                   : lang === "pt"
-                  ? "Mês inteiro"
-                  : "Full month",
+                  ? "16 Out – 15 Dez"
+                  : "Oct 16 – Dec 15",
             },
           ]}
-          pricePerNight={3000}
-          minStay={2}
+          pricePerNight={6200}
+          minStay={3}
           lang={lang as Locale}
           perNightLabel={dict.rates.perNight}
           minStayLabel={dict.rates.minStay}
           nightsLabel={dict.rates.nights}
         />
+
+        {/* Haute saison : 16 Déc – Fin Fév */}
         <PriceCard
           title={dict.rates.highSeason}
           seasonType="high"
@@ -123,53 +101,21 @@ export default async function RatesPage({
             {
               dates:
                 lang === "fr"
-                  ? "20 Déc – 10 Jan"
+                  ? "16 Déc – Fin Fév"
                   : lang === "pt"
-                  ? "20 Dez – 10 Jan"
-                  : "Dec 20 – Jan 10",
-              label:
-                lang === "fr"
-                  ? "Réveillon & Nouvel An"
-                  : lang === "pt"
-                  ? "Réveillon & Ano Novo"
-                  : "New Year's Eve & Day",
-            },
-            {
-              dates:
-                lang === "fr"
-                  ? "10 – 25 Fév"
-                  : lang === "pt"
-                  ? "10 – 25 Fev"
-                  : "Feb 10 – 25",
-              label:
-                lang === "fr"
-                  ? "Carnaval"
-                  : lang === "pt"
-                  ? "Carnaval"
-                  : "Carnival",
-            },
-            {
-              dates:
-                lang === "fr"
-                  ? "1 – 31 Juillet"
-                  : lang === "pt"
-                  ? "1 – 31 Julho"
-                  : "July 1 – 31",
-              label:
-                lang === "fr"
-                  ? "Vacances scolaires"
-                  : lang === "pt"
-                  ? "Férias escolares"
-                  : "School holidays",
+                  ? "16 Dez – Fim Fev"
+                  : "Dec 16 – End Feb",
             },
           ]}
-          pricePerNight={3800}
+          pricePerNight={8000}
           minStay={3}
           lang={lang as Locale}
           perNightLabel={dict.rates.perNight}
           minStayLabel={dict.rates.minStay}
           nightsLabel={dict.rates.nights}
         />
+
+        {/* Fermeture annuelle : 1 Mar – 31 Mai */}
         <PriceCard
           title={dict.rates.closedSeason}
           seasonType="closed"
@@ -177,16 +123,10 @@ export default async function RatesPage({
             {
               dates:
                 lang === "fr"
-                  ? "1 – 19 Décembre"
+                  ? "1 Mars – 31 Mai"
                   : lang === "pt"
-                  ? "1 – 19 Dezembro"
-                  : "December 1 – 19",
-              label:
-                lang === "fr"
-                  ? "Entretien annuel"
-                  : lang === "pt"
-                  ? "Manutenção anual"
-                  : "Annual maintenance",
+                  ? "1 Março – 31 Maio"
+                  : "March 1 – May 31",
             },
           ]}
           pricePerNight={0}
@@ -200,28 +140,24 @@ export default async function RatesPage({
     </SectionWrapper>
   );
 
-  // ── 5. Conditions de paiement ──────────────────────────────────────────
   const paymentSection = (
     <SectionWrapper>
       <PaymentSection lang={lang as Locale} dict={dict.rates} />
     </SectionWrapper>
   );
 
-  // ── 6. Politique d'annulation ──────────────────────────────────────────
   const cancellationSection = (
     <SectionWrapper className="bg-sand-50">
       <CancellationSection lang={lang as Locale} dict={dict.rates} />
     </SectionWrapper>
   );
 
-  // ── 7. FAQ ─────────────────────────────────────────────────────────────
   const faqSection = (
     <SectionWrapper>
       <FaqSection lang={lang as Locale} dict={dict.rates} />
     </SectionWrapper>
   );
 
-  // ── 8. CTA ─────────────────────────────────────────────────────────────
   const ctaSection = (
     <SectionWrapper>
       <div className="bg-sand-200 rounded-softer p-10 md:p-14 text-center">
@@ -249,7 +185,6 @@ export default async function RatesPage({
         </div>
       </SectionWrapper>
 
-      {/* Sections coordonnées (calendriers + calculateur) + reste de la page */}
       <TarifsCalendarSync
         lang={lang as Locale}
         dict={dict.rates}

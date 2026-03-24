@@ -81,15 +81,25 @@ export default async function ContactPage({
           </a>
 
           {/* Adresse */}
-          <div className="card-organic p-8 flex flex-col gap-4">
-            <div className="w-12 h-12 bg-ocean-50 rounded-soft flex items-center justify-center">
+          <a
+            href="https://maps.app.goo.gl/A5EBLDqpGGYxqDYw6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card-organic p-8 flex flex-col gap-4 hover:shadow-natural-lg transition-shadow group"
+          >
+            <div className="w-12 h-12 bg-ocean-50 rounded-soft flex items-center justify-center group-hover:bg-ocean-100 transition-colors">
               <MapPin className="w-6 h-6 text-ocean-500" />
             </div>
             <div>
               <p className="font-heading text-lg font-semibold text-charcoal-800 mb-1">{dict.contact.addressLabel}</p>
-              <p className="text-charcoal-700/60 text-sm leading-relaxed">Pontal de Maceió<br />Flexeiras, Alagoas<br />Brasil — CEP 57695-000</p>
+              <p className="text-charcoal-700/60 text-sm leading-relaxed">
+                R. C - Pontal de Maceio<br />Fortim - CE, 62815-000<br />Brasil
+              </p>
+              <p className="text-ocean-500 font-medium text-xs mt-2 group-hover:underline">
+                {lang === "fr" ? "Voir sur Google Maps" : lang === "pt" ? "Ver no Google Maps" : "View on Google Maps"}
+              </p>
             </div>
-          </div>
+          </a>
 
           {/* Horaires */}
           <div className="card-organic p-8 flex flex-col gap-4">
@@ -106,14 +116,14 @@ export default async function ContactPage({
         {/* Google Maps embed */}
         <div className="mt-10 rounded-softer overflow-hidden shadow-natural">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15780.123456789!2d-35.123456!3d-9.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sPontal+de+Maceio!5e0!3m2!1sfr!2sbr!4v1700000000000"
+            src="https://maps.google.com/maps?q=Pontal+de+Maceio,+Fortim,+CE,+Brasil&t=&z=14&ie=UTF8&iwloc=&output=embed"
             width="100%"
             height="320"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Pontal de Maceió"
+            title="Pontal de Maceió — Fortim, CE"
           />
         </div>
       </div>

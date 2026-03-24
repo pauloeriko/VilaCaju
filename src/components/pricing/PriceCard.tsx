@@ -1,20 +1,17 @@
 import React from "react";
-import { CalendarDays, Moon } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { SeasonType } from "@/lib/pricing/types";
-import CurrencyDisplay from "@/components/ui/CurrencyDisplay";
+import { formatCurrency, brlToEur } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 interface PeriodItem {
   dates: string;
-  // Libellé optionnel affiché sous les dates (ex: "Carnaval", "Réveillon")
-  label?: string;
 }
 
 interface PriceCardProps {
   title: string;
   seasonType: SeasonType;
-  // Chaque période avec ses dates et un libellé optionnel
   periods: PeriodItem[];
   pricePerNight: number;
   minStay: number;
@@ -76,13 +73,11 @@ export default function PriceCard({
   seasonType,
   periods,
   pricePerNight,
-  minStay,
   lang,
   perNightLabel,
-  minStayLabel,
-  nightsLabel,
 }: PriceCardProps) {
   const styles = seasonStyles[seasonType];
+  const eurAmount = brlToEur(pricePerNight);
 
   return (
     <div
@@ -101,51 +96,47 @@ export default function PriceCard({
         {title}
       </span>
 
-      {/* Prix + séjour minimum — même structure pour toutes les saisons */}
+      {/* Prix — principal + conversion sur deux lignes */}
       <div className="mb-5">
-        <div className="flex items-baseline gap-1 mb-1">
-          {seasonType !== "closed" ? (
-            <>
-              <CurrencyDisplay amountBRL={pricePerNight} lang={lang} />
-              <span className="text-charcoal-700/50 text-sm">{perNightLabel}</span>
-            </>
-          ) : (
-            // Placeholder aligné sur la hauteur du prix pour la carte fermée
-            <span className="text-charcoal-700/40 text-2xl font-heading font-semibold">—</span>
-          )}
-        </div>
-        <div className="flex items-center gap-1.5 text-charcoal-700/50 text-xs">
-          <Moon className="w-3 h-3" />
-          <span>
-            {seasonType !== "closed"
-              ? `${minStayLabel} : ${minStay} ${nightsLabel}`
-              : closedLabel[lang]}
-          </span>
-        </div>
+        {seasonType !== "closed" ? (
+          <>
+            <div className="font-heading text-2xl font-bold text-charcoal-800 leading-tight">
+              {formatCurrency(pricePerNight, "BRL", lang)}
+              <span className="text-charcoal-700/50 text-sm font-normal ml-1">{perNightLabel}</span>
+            </div>
+            <div className="text-sm text-charcoal-500 mt-0.5">
+              ≈ {formatCurrency(eurAmount, "EUR", lang)}
+            </div>
+          </>
+        ) : (
+          <span className="text-charcoal-700/40 text-2xl font-heading font-semibold">—</span>
+        )}
       </div>
 
       {/* Séparateur */}
       <div className={cn("border-t mb-4", styles.divider)} />
 
-      {/* Périodes sous forme de pills */}
+      {/* Périodes — uniquement les dates, sans label */}
       <div className="flex flex-col gap-2">
-        {periods.map((period, i) => (
-          <div
-            key={i}
-            className={cn(
-              "flex items-start gap-2 rounded-lg px-3 py-2.5",
-              styles.pill
-            )}
-          >
-            <CalendarDays className={cn("w-3.5 h-3.5 mt-0.5 shrink-0", styles.icon)} />
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-semibold leading-tight">{period.dates}</span>
-              {period.label !== undefined && period.label !== "" && (
-                <span className="text-xs opacity-60 leading-tight mt-0.5">{period.label}</span>
-              )}
+        {seasonType !== "closed"
+          ? periods.map((period, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2.5",
+                  styles.pill
+                )}
+              >
+                <CalendarDays className={cn("w-3.5 h-3.5 shrink-0", styles.icon)} />
+                <span className="text-xs font-semibold leading-tight">{period.dates}</span>
+              </div>
+            ))
+          : (
+            <div className={cn("flex items-center gap-2 rounded-lg px-3 py-2.5", styles.pill)}>
+              <CalendarDays className={cn("w-3.5 h-3.5 shrink-0", styles.icon)} />
+              <span className="text-xs font-semibold">{closedLabel[lang]}</span>
             </div>
-          </div>
-        ))}
+          )}
       </div>
     </div>
   );

@@ -67,21 +67,23 @@
   },
   "villa": {
     "pageTitle": "Vila Caju",
-    "intro": "Vila Caju é uma propriedade contemporânea de charme, situada entre coqueiros e o oceano. Com seus 6 quartos espaçosos, piscina privativa e espaços de convivência abertos, recebe até 17 pessoas em um cenário de exceção.",
+    "intro": "Vila Caju é uma propriedade contemporânea de charme, situada entre coqueiros e o oceano. Com seus 7 quartos espaçosos, piscina privativa e espaços de convivência abertos, recebe até 17 pessoas em um cenário de exceção.",
     "capacity": "Capacidade: 17 pessoas",
-    "roomsTitle": "Planta dos quartos",
+    "roomsTitle": "Os quartos",
     "amenitiesTitle": "Comodidades",
     "cta": "Convencido?",
     "ctaButton": "Reservar a villa"
   },
   "destination": {
     "pageTitle": "Pontal de Maceió",
-    "subtitle": "Capital mundial do kitesurf e segredo do Nordeste",
-    "intro": "Localizado no litoral norte de Alagoas, Pontal de Maceió é reconhecido internacionalmente como um dos melhores destinos de kitesurf do mundo — vento constante 300 dias por ano, lagoas rasas e spots para todos os níveis. Além do kite, esta vila de pescadores preservada do turismo de massa oferece águas cristalinas, piscinas naturais e gastronomia local excepcional.",
+    "subtitle": "Capital mundial do kitesurf e segredo do Ceará",
+    "intro": "Localizado no Ceará, Pontal de Maceió é reconhecido internacionalmente como um dos melhores destinos de kitesurf do mundo — vento constante 300 dias por ano, lagoas rasas e spots para todos os níveis. Além do kite, esta vila de pescadores preservada do turismo de massa oferece águas cristalinas, passeios a cavalo, excursões de buggy e gastronomia local excepcional.",
     "activitiesTitle": "O que fazer",
     "gettingThereTitle": "Como chegar",
-    "airport": "Aeroporto de Maceió (MCZ) — 25 km",
-    "transfer": "Transfer privativo organizado sob demanda",
+    "airport": "Aeroporto de Fortaleza (FOR) — 180 km",
+    "transfer": "Transfer privativo organizado sob demanda (opção)",
+    "address": "R. C - Pontal de Maceio, Fortim - CE, 62815-000, Brasil",
+    "mapsLabel": "Ver no Google Maps",
     "cta": "Reserve sua estadia em Pontal de Maceió",
     "kitesurfBadge": "🏆 Top destino mundial de kitesurf"
   },
@@ -161,7 +163,7 @@
     "learnMore": "Saiba mais"
   },
   "footer": {
-    "tagline": "Sua fuga para o Nordeste brasileiro",
+    "tagline": "Sua fuga para o Brasil",
     "legal": "Aviso legal",
     "cgv": "T&C",
     "privacy": "Privacidade",

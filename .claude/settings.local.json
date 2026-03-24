@@ -9,7 +9,14 @@
       "Bash(ls:*)",
       "Bash(python3:*)",
       "Bash(grep:*)",
-      "Bash(git -C /Users/paul-eric/sources/vila_caju_claude log --oneline -5)"
+      "Bash(git -C /Users/paul-eric/sources/vila_caju_claude log --oneline -5)",
+      "Bash(node -e \"const l = require\\(''/Users/paul-eric/sources/vila_caju_claude/node_modules/lucide-react''\\); const icons = [''Horse'',''Footprints'',''Route'',''Gauge'',''Bike'',''PersonStanding'',''Milestone'',''Tractor'',''Bike'',''DraftingCompass'']; icons.forEach\\(i => console.log\\(i, !!l[i]\\)\\)\")",
+      "Bash(node -e \"const lr = require\\(''/Users/paul-eric/sources/vila_caju_claude/node_modules/lucide-react''\\); console.log\\(Object.keys\\(lr\\).filter\\(k => k.toLowerCase\\(\\).includes\\(''horse''\\) || k.toLowerCase\\(\\).includes\\(''equi''\\)\\)\\)\")",
+      "Bash(npm show:*)",
+      "Bash(npm pack:*)",
+      "Bash(curl -s https://unpkg.com/lucide-react@0.477.0/dist/esm/icons/horse.js)",
+      "Bash(curl -s https://unpkg.com/lucide-react@0.577.0/dist/esm/icons/horse.js)",
+      "WebFetch(domain:www.google.fr)"
     ]
   }
 }

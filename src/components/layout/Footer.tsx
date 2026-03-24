@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { MessageCircle, Mail, MapPin } from "lucide-react";
+import { MessageCircle, Mail, MapPin, Instagram } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { buildWhatsAppUrl } from "@/lib/utils";
@@ -77,10 +77,24 @@ export default function Footer({ lang, dict }: FooterProps) {
                 <Mail className="w-4 h-4" />
                 contact@vilacaju.com
               </a>
-              <div className="flex items-center gap-2 text-sand-400 text-sm">
-                <MapPin className="w-4 h-4" />
-                Pontal de Macei\u00f3, Alagoas, Brasil
-              </div>
+              <a
+                href="https://www.instagram.com/vilacajupontal/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sand-400 hover:text-pink-400 transition-colors text-sm"
+              >
+                <Instagram className="w-4 h-4" />
+                @vilacajupontal
+              </a>
+              <a
+                href="https://maps.app.goo.gl/A5EBLDqpGGYxqDYw6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 text-sand-400 hover:text-terracotta-300 transition-colors text-sm"
+              >
+                <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>Pontal de Maceió Fortim - CE, Brasil</span>
+              </a>
             </div>
           </div>
         </div>

@@ -67,21 +67,23 @@
   },
   "villa": {
     "pageTitle": "Vila Caju",
-    "intro": "Vila Caju est une propriété contemporaine de charme, nichée entre cocotiers et océan. Avec ses 6 chambres spacieuses, sa piscine privée et ses espaces de vie ouverts, elle accueille jusqu'à 17 personnes dans un cadre d'exception.",
+    "intro": "Vila Caju est une propriété contemporaine de charme, nichée entre cocotiers et océan. Avec ses 7 chambres spacieuses, sa piscine privée et ses espaces de vie ouverts, elle accueille jusqu'à 17 personnes dans un cadre d'exception.",
     "capacity": "Capacité : 17 personnes",
-    "roomsTitle": "Plan des chambres",
+    "roomsTitle": "Les chambres",
     "amenitiesTitle": "Équipements",
     "cta": "Convaincu ?",
     "ctaButton": "Réserver la villa"
   },
   "destination": {
     "pageTitle": "Pontal de Maceió",
-    "subtitle": "Capitale mondiale du kitesurf et secret du Nordeste",
-    "intro": "Situé sur la côte nord d'Alagoas, Pontal de Maceió est reconnu internationalement comme l'une des meilleures destinations de kitesurf au monde — vent constant 300 jours par an, lagunes peu profondes et spots pour tous niveaux. Au-delà du kite, ce village de pêcheurs préservé du tourisme de masse vous offre eaux turquoise, piscines naturelles et gastronomie locale exceptionnelle.",
+    "subtitle": "Capitale mondiale du kitesurf et secret du Ceará",
+    "intro": "Situé dans le Ceará, Pontal de Maceió est reconnu internationalement comme l'une des meilleures destinations de kitesurf au monde — vent constant 300 jours par an, lagunes peu profondes et spots pour tous niveaux. Au-delà du kite, ce village de pêcheurs préservé du tourisme de masse vous offre eaux turquoise, balades à cheval, excursions en buggy et gastronomie locale exceptionnelle.",
     "activitiesTitle": "Que faire sur place",
     "gettingThereTitle": "Comment venir",
-    "airport": "Aéroport de Maceió (MCZ) — 25 km",
-    "transfer": "Transfert privé organisé sur demande",
+    "airport": "Aéroport de Fortaleza (FOR) — 180 km",
+    "transfer": "Transfert privé organisé sur demande (option)",
+    "address": "R. C - Pontal de Maceio, Fortim - CE, 62815-000, Brésil",
+    "mapsLabel": "Voir sur Google Maps",
     "cta": "Réservez votre séjour à Pontal de Maceió",
     "kitesurfBadge": "🏆 Top destination mondiale kitesurf"
   },
@@ -161,7 +163,7 @@
     "learnMore": "En savoir plus"
   },
   "footer": {
-    "tagline": "Votre évasion au Nordeste brésilien",
+    "tagline": "Votre évasion au Brésil",
     "legal": "Mentions légales",
     "cgv": "CGV",
     "privacy": "Confidentialité",

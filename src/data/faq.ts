@@ -16,9 +16,9 @@ export const faqEntries: FaqEntry[] = [
       pt: "Quantas pessoas a villa comporta?",
     },
     answer: {
-      fr: "Vila Caju accueille jusqu'à 17 personnes dans ses 6 chambres avec salle de bain privative. Elle est idéale pour les grandes familles, groupes d'amis et séminaires privés.",
-      en: "Vila Caju accommodates up to 17 guests in its 6 en-suite bedrooms. It is ideal for large families, groups of friends and private seminars.",
-      pt: "Vila Caju acomoda até 17 pessoas em seus 6 quartos com banheiro privativo. É ideal para famílias grandes, grupos de amigos e seminários privados.",
+      fr: "Vila Caju accueille jusqu'à 17 personnes dans ses 7 chambres avec salle de bain privative. Elle est idéale pour les grandes familles, groupes d'amis et séminaires privés.",
+      en: "Vila Caju accommodates up to 17 guests in its 7 en-suite bedrooms. It is ideal for large families, groups of friends and private seminars.",
+      pt: "Vila Caju acomoda até 17 pessoas em seus 7 quartos com banheiro privativo. É ideal para famílias grandes, grupos de amigos e seminários privados.",
     },
   },
   {
@@ -70,9 +70,9 @@ export const faqEntries: FaqEntry[] = [
       pt: "Qual é a duração mínima de estadia?",
     },
     answer: {
-      fr: "La durée minimum est de 5 nuits en basse saison et de 7 nuits en haute et très haute saison. Des exceptions peuvent être envisagées selon les disponibilités — contactez-nous.",
-      en: "The minimum stay is 5 nights in low season and 7 nights in high and peak season. Exceptions may be considered depending on availability — contact us.",
-      pt: "A estadia mínima é de 5 noites na baixa temporada e 7 noites na alta e altíssima temporada. Exceções podem ser consideradas conforme disponibilidade — entre em contato.",
+      fr: "La durée minimum est de 3 nuits, quelle que soit la saison. Des exceptions peuvent être envisagées selon les disponibilités — contactez-nous.",
+      en: "The minimum stay is 3 nights, regardless of the season. Exceptions may be considered depending on availability — contact us.",
+      pt: "A estadia mínima é de 3 noites, independentemente da temporada. Exceções podem ser consideradas conforme disponibilidade — entre em contato.",
     },
   },
   {
@@ -96,9 +96,9 @@ export const faqEntries: FaqEntry[] = [
       pt: "O que está incluído no preço exibido?",
     },
     answer: {
-      fr: "Le prix comprend la location de la villa, le linge de maison, le ménage de fin de séjour (800 BRL), l'accès à la piscine, le WiFi haut débit et la climatisation. Les transferts aéroport et le chef cuisinier sont disponibles en option.",
-      en: "The price includes villa rental, bed linen, end-of-stay cleaning (800 BRL), pool access, high-speed WiFi and air conditioning. Airport transfers and private chef are available as options.",
-      pt: "O preço inclui aluguel da villa, roupa de cama, limpeza de fim de estadia (800 BRL), acesso à piscina, WiFi de alta velocidade e ar-condicionado. Transfer aeroporto e chef particular são opções disponíveis.",
+      fr: "Le prix comprend la location de la villa, le linge de maison, le ménage (inclus), l'accès à la piscine, le WiFi haut débit, le petit déjeuner. Les options suivantes sont disponibles en supplément : transfert aéroport, chef cuisinier, sortie à cheval et location de buggy.",
+      en: "The price includes villa rental, bed linen, cleaning (included), pool access, high-speed WiFi and breakfast. The following options are available at extra cost: airport transfer, private chef, horse riding and buggy rental.",
+      pt: "O preço inclui aluguel da villa, roupa de cama, limpeza (incluída), acesso à piscina, WiFi de alta velocidade e café da manhã. As seguintes opções estão disponíveis com custo adicional: transfer aeroporto, chef particular, passeio a cavalo e aluguel de buggy.",
     },
   },
   {
@@ -137,9 +137,9 @@ export const faqEntries: FaqEntry[] = [
       pt: "Como chego à villa do aeroporto?",
     },
     answer: {
-      fr: "L'aéroport de Maceió (MCZ) est à 25 km, soit environ 30 à 40 minutes de trajet. Nous organisons des transferts privés sur demande. Il est aussi possible de louer un véhicule sur place.",
-      en: "Maceió Airport (MCZ) is 25 km away, about 30–40 minutes by car. We arrange private transfers on request. Car rental is also available on site.",
-      pt: "O aeroporto de Maceió (MCZ) fica a 25 km, cerca de 30 a 40 minutos de carro. Organizamos transfers privativos sob demanda. Aluguel de carro também está disponível no local.",
+      fr: "L'aéroport international de Fortaleza (FOR) est à environ 180 km, soit environ 2h30 de trajet. Nous organisons des transferts privés sur demande (option payante). Il est aussi possible de louer un véhicule sur place.",
+      en: "Fortaleza International Airport (FOR) is about 180 km away, approximately 2h30 by car. We arrange private transfers on request (paid option). Car rental is also available.",
+      pt: "O aeroporto internacional de Fortaleza (FOR) fica a cerca de 180 km, aproximadamente 2h30 de carro. Organizamos transfers privativos sob demanda (opção paga). Aluguel de carro também está disponível.",
     },
   },
   {
@@ -165,9 +165,22 @@ export const faqEntries: FaqEntry[] = [
       pt: "É possível praticar kitesurf a partir da villa?",
     },
     answer: {
-      fr: "Pontal de Maceió est l'une des meilleures destinations mondiales de kitesurf. Les spots sont accessibles à pied ou en quelques minutes. Des cours et locations de matériel peuvent être organisés sur demande, pour tous niveaux.",
-      en: "Pontal de Maceió is one of the world's best kitesurfing destinations. Spots are accessible on foot or within minutes. Lessons and equipment rental can be arranged on request, for all levels.",
-      pt: "Pontal de Maceió é um dos melhores destinos mundiais de kitesurf. Os spots são acessíveis a pé ou em poucos minutos. Aulas e aluguel de equipamentos podem ser organizados sob demanda, para todos os níveis.",
+      fr: "Pontal de Maceió est l'une des meilleures destinations mondiales de kitesurf. Il est tout à fait possible de partir en session de kitesurf depuis la maison. Des cours et locations de matériel peuvent être organisés pour tous niveaux.",
+      en: "Pontal de Maceió is one of the world's best kitesurfing destinations. It is perfectly possible to go for a kitesurfing session directly from the house. Lessons and equipment rental can be arranged for all levels.",
+      pt: "Pontal de Maceió é um dos melhores destinos mundiais de kitesurf. É totalmente possível partir para uma sessão de kitesurf diretamente da casa. Aulas e aluguel de equipamentos podem ser organizados para todos os níveis.",
+    },
+  },
+  {
+    category: "activities",
+    question: {
+      fr: "Quelles activités sont disponibles ?",
+      en: "What activities are available?",
+      pt: "Quais atividades estão disponíveis?",
+    },
+    answer: {
+      fr: "Il y a énormément d'activités à Pontal : kitesurf dans les meilleurs spots du monde, sorties à cheval sur la plage et dans les dunes, location de buggy pour explorer la région, virée en bateau, padel, etc…",
+      en: "There is a huge variety of activities in Pontal: kitesurfing at world-class spots, horse riding on the beach and dunes, buggy rental to explore the region, boat trips, paddle tennis, and much more…",
+      pt: "Há muitas atividades em Pontal: kitesurf nos melhores spots do mundo, passeios a cavalo na praia e nas dunas, aluguel de buggy para explorar a região, passeio de barco, padel, etc…",
     },
   },
   {

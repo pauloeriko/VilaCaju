@@ -1,47 +1,17 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useCallback, useMemo } from "react";
+import { ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { pricingConfig } from "@/lib/pricing/seasons";
-import type { SeasonType } from "@/lib/pricing/types";
+import { BOOKED_DATES, getSeasonForDay, rangeContainsUnavailable } from "@/lib/pricing/availability";
 import type { Locale } from "@/lib/i18n/config";
 
-// ─── Réservations simulées (à remplacer par une API Supabase) ───────────────
-const BOOKED_DATES = new Set<string>([
-  "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-14",
-  "2026-03-15", "2026-03-16", "2026-03-17",
-  "2026-04-05", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09",
-  "2026-04-10", "2026-04-11", "2026-04-12", "2026-04-13",
-  "2026-07-10", "2026-07-11", "2026-07-12", "2026-07-13", "2026-07-14",
-  "2026-07-15", "2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19",
-  "2026-07-20", "2026-07-21", "2026-07-22",
-]);
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function toKey(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-function getSeasonForDay(month: number, day: number): SeasonType | null {
-  for (const season of pricingConfig.seasons) {
-    const { startMonth, startDay, endMonth, endDay } = season;
-    if (startMonth <= endMonth) {
-      if (
-        (month > startMonth || (month === startMonth && day >= startDay)) &&
-        (month < endMonth   || (month === endMonth   && day <= endDay))
-      ) return season.type;
-    } else {
-      if (
-        month > startMonth  || (month === startMonth && day >= startDay) ||
-        month < endMonth    || (month === endMonth   && day <= endDay)
-      ) return season.type;
-    }
-  }
-  return null;
-}
-
-// ─── Localisation ────────────────────────────────────────────────────────────
+// ─── Localisation ─────────────────────────────────────────────────────────────
 const MONTH_NAMES: Record<Locale, string[]> = {
   fr: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
   en: ["January","February","March","April","May","June","July","August","September","October","November","December"],
@@ -55,30 +25,37 @@ const DAY_NAMES: Record<Locale, string[]> = {
 };
 
 const LABELS: Record<Locale, {
-  booked: string; title: string;
-  selectCheckIn: string; selectCheckOut: string; clear: string; selected: string;
+  booked: string; title: string; minStay: string;
+  selectCheckIn: string; selectCheckOut: string;
+  clear: string; selected: string; unavailableRange: string;
 }> = {
   fr: {
     booked: "Occupé", title: "Calendrier de disponibilité",
+    minStay: "3 nuits minimum",
     selectCheckIn: "Sélectionnez une date d'arrivée",
     selectCheckOut: "Sélectionnez une date de départ",
     clear: "Réinitialiser", selected: "Sélectionné",
+    unavailableRange: "Cette période contient des dates non disponibles.",
   },
   en: {
     booked: "Occupied", title: "Availability calendar",
+    minStay: "3 nights minimum",
     selectCheckIn: "Select check-in date",
     selectCheckOut: "Select check-out date",
     clear: "Clear", selected: "Selected",
+    unavailableRange: "This period contains unavailable dates.",
   },
   pt: {
     booked: "Ocupado", title: "Calendário de disponibilidade",
+    minStay: "Mínimo 3 noites",
     selectCheckIn: "Selecione a data de chegada",
     selectCheckOut: "Selecione a data de saída",
     clear: "Limpar", selected: "Selecionado",
+    unavailableRange: "Este período contém datas indisponíveis.",
   },
 };
 
-// ─── Composant MonthGrid ─────────────────────────────────────────────────────
+// ─── Composant MonthGrid ──────────────────────────────────────────────────────
 interface MonthGridProps {
   year: number;
   month: number;
@@ -86,12 +63,13 @@ interface MonthGridProps {
   checkIn: string | null;
   checkOut: string | null;
   hoverDate: string | null;
+  hoverRangeIsInvalid: boolean;
   onDayClick: (key: string) => void;
   onDayHover: (key: string | null) => void;
 }
 
 function MonthGrid({
-  year, month, lang, checkIn, checkOut, hoverDate, onDayClick, onDayHover,
+  year, month, lang, checkIn, checkOut, hoverDate, hoverRangeIsInvalid, onDayClick, onDayHover,
 }: MonthGridProps) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
@@ -117,27 +95,29 @@ function MonthGrid({
     const key = toKey(year, month, d);
     const season = getSeasonForDay(month, d);
     const isPast = dateObj < today;
-    const isClosed = season === "closed";
-    const isBooked = BOOKED_DATES.has(key);
-    const isUnavailable = isClosed || isBooked || isPast;
-    const isCheckIn = key === checkIn;
+    const isUnavailable = isPast || season === "closed" || BOOKED_DATES.has(key);
+    const isCheckIn  = key === checkIn;
     const isCheckOut = key === checkOut;
-    const inRange = isInRange(key);
+    const inRange    = isInRange(key);
 
-    // Calcul du className par branche exclusive pour éviter les conflits Tailwind
-    const baseClass = "relative flex items-center justify-center rounded-lg text-sm font-medium h-12 w-full select-none transition-colors";
-    let stateClass: string;
+    const base = "relative flex items-center justify-center rounded-lg text-sm font-medium h-12 w-full select-none transition-colors";
+    let state: string;
+
     if (isCheckIn || isCheckOut) {
-      stateClass = "bg-terracotta-500 text-white font-bold cursor-pointer";
-    } else if (inRange) {
-      stateClass = "bg-terracotta-100 text-terracotta-800 cursor-pointer";
+      state = "bg-terracotta-500 text-white font-bold cursor-pointer";
     } else if (isPast) {
-      stateClass = "text-charcoal-200 cursor-not-allowed";
-    } else if (isUnavailable) {
-      // Occupé ou fermé : fond gris explicite + texte barré
-      stateClass = "bg-charcoal-100 text-charcoal-400 line-through cursor-not-allowed";
+      // Passé : texte très clair, pas de fond
+      state = "text-charcoal-200 cursor-not-allowed";
+    } else if (season === "closed" || BOOKED_DATES.has(key)) {
+      // Non disponible (occupé ou fermeture) : même couleur gris clair
+      state = "bg-[#D3D3D3] text-charcoal-400 line-through cursor-not-allowed";
+    } else if (inRange) {
+      // Plage sélectionnée — rouge si invalide, terracotta si valide
+      state = hoverRangeIsInvalid
+        ? "bg-red-50 text-red-400 cursor-not-allowed"
+        : "bg-terracotta-100 text-terracotta-800 cursor-pointer";
     } else {
-      stateClass = "text-charcoal-700 hover:bg-sand-100 cursor-pointer";
+      state = "text-charcoal-700 hover:bg-sand-100 cursor-pointer";
     }
 
     cells.push(
@@ -148,7 +128,7 @@ function MonthGrid({
         onClick={() => !isUnavailable && onDayClick(key)}
         onMouseEnter={() => !isUnavailable && onDayHover(key)}
         onMouseLeave={() => onDayHover(null)}
-        className={`${baseClass} ${stateClass}`}
+        className={`${base} ${state}`}
         aria-label={key}
       >
         {d}
@@ -158,25 +138,22 @@ function MonthGrid({
 
   return (
     <div className="w-full">
-      {/* Nom du mois */}
       <div className="text-center font-semibold text-charcoal-700 text-base mb-4">
         {MONTH_NAMES[lang][month - 1]} {year}
       </div>
-      {/* Jours de la semaine */}
       <div className="grid grid-cols-7 gap-1.5 mb-2">
-        {DAY_NAMES[lang].map((d, i) => (
+        {DAY_NAMES[lang].map((day, i) => (
           <div key={i} className="text-center text-xs text-charcoal-400 font-medium py-1">
-            {d}
+            {day}
           </div>
         ))}
       </div>
-      {/* Cases jours */}
       <div className="grid grid-cols-7 gap-1.5">{cells}</div>
     </div>
   );
 }
 
-// ─── Composant principal ─────────────────────────────────────────────────────
+// ─── Composant principal ──────────────────────────────────────────────────────
 interface AvailabilityCalendarProps {
   lang: Locale;
   onDatesChange?: (checkIn: string, checkOut: string) => void;
@@ -186,10 +163,11 @@ interface AvailabilityCalendarProps {
 
 const TOTAL_MONTHS = 12;
 
-export default function AvailabilityCalendar({ lang, onDatesChange, initialCheckIn, initialCheckOut }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({
+  lang, onDatesChange, initialCheckIn, initialCheckOut,
+}: AvailabilityCalendarProps) {
   const now = new Date();
 
-  // Naviguer directement vers le mois de la date d'arrivée si elle est fournie
   const initialOffset = (() => {
     if (!initialCheckIn) return 0;
     const ci = new Date(initialCheckIn);
@@ -197,10 +175,12 @@ export default function AvailabilityCalendar({ lang, onDatesChange, initialCheck
     return Math.max(0, Math.min(diff, TOTAL_MONTHS - 1));
   })();
 
-  const [offset, setOffset] = useState(initialOffset);
-  const [checkIn, setCheckIn] = useState<string | null>(initialCheckIn ?? null);
-  const [checkOut, setCheckOut] = useState<string | null>(initialCheckOut ?? null);
+  const [offset,    setOffset]    = useState(initialOffset);
+  const [checkIn,   setCheckIn]   = useState<string | null>(initialCheckIn  ?? null);
+  const [checkOut,  setCheckOut]  = useState<string | null>(initialCheckOut ?? null);
   const [hoverDate, setHoverDate] = useState<string | null>(null);
+  const [rangeError, setRangeError] = useState(false);
+
   const labels = LABELS[lang];
 
   const months: Array<{ year: number; month: number }> = [];
@@ -209,44 +189,79 @@ export default function AvailabilityCalendar({ lang, onDatesChange, initialCheck
     months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
   }
 
-  const currentMonth = months[offset];
+  // Détecte si la plage survolée est invalide (pour colorer la plage en rouge)
+  const hoverRangeIsInvalid = useMemo(() => {
+    if (!checkIn || checkOut || !hoverDate || hoverDate <= checkIn) return false;
+    return rangeContainsUnavailable(checkIn, hoverDate);
+  }, [checkIn, checkOut, hoverDate]);
 
   const handleDayClick = useCallback((key: string) => {
+    // Pas de check-in ou les deux dates déjà choisies → on recommence
     if (!checkIn || (checkIn && checkOut)) {
       setCheckIn(key);
       setCheckOut(null);
-    } else {
-      if (key <= checkIn) {
-        setCheckIn(key);
-        setCheckOut(null);
-      } else {
-        setCheckOut(key);
-        onDatesChange?.(checkIn, key);
-      }
+      setRangeError(false);
+      return;
     }
+    // Nouvelle date ≤ check-in → on remplace le check-in
+    if (key <= checkIn) {
+      setCheckIn(key);
+      setCheckOut(null);
+      setRangeError(false);
+      return;
+    }
+    // Vérification : la plage contient-elle des dates non disponibles ?
+    if (rangeContainsUnavailable(checkIn, key)) {
+      setRangeError(true);
+      return;
+    }
+    // Plage valide
+    setRangeError(false);
+    setCheckOut(key);
+    onDatesChange?.(checkIn, key);
   }, [checkIn, checkOut, onDatesChange]);
 
   const handleClear = () => {
     setCheckIn(null);
     setCheckOut(null);
     setHoverDate(null);
+    setRangeError(false);
   };
 
-  const instruction = !checkIn
+  const showError = rangeError || hoverRangeIsInvalid;
+
+  const instruction = showError
+    ? labels.unavailableRange
+    : !checkIn
     ? labels.selectCheckIn
     : !checkOut
     ? labels.selectCheckOut
     : `${checkIn} → ${checkOut}`;
 
+  const currentMonth = months[offset];
+
   return (
     <div className="max-w-3xl mx-auto">
-      {/* En-tête — centré */}
-      <div className="text-center mb-6">
+      {/* En-tête */}
+      <div className="text-center mb-4">
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-charcoal-800">
           {labels.title}
         </h2>
-        <p className="text-md text-charcoal-500 mt-1">{instruction}</p>
+        <p className="text-sm text-terracotta-500 font-medium mt-1">{labels.minStay}</p>
       </div>
+
+      {/* Message d'erreur persistant */}
+      {rangeError && (
+        <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3 mb-4">
+          <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+          <p className="text-sm text-red-700 font-medium">{labels.unavailableRange}</p>
+        </div>
+      )}
+
+      {/* Instruction / dates sélectionnées */}
+      <p className={cn("text-sm text-center mb-4", showError ? "text-red-500 font-medium" : "text-charcoal-500")}>
+        {instruction}
+      </p>
 
       {/* Navigation mois + bouton reset */}
       <div className="flex items-center justify-between mb-5">
@@ -262,7 +277,7 @@ export default function AvailabilityCalendar({ lang, onDatesChange, initialCheck
           <ChevronLeft className="w-5 h-5 text-charcoal-600" />
         </button>
 
-        {(checkIn || checkOut) && (
+        {(checkIn || checkOut || rangeError) && (
           <button
             onClick={handleClear}
             className="text-sm text-charcoal-500 hover:text-terracotta-500 underline transition-colors"
@@ -284,7 +299,7 @@ export default function AvailabilityCalendar({ lang, onDatesChange, initialCheck
         </button>
       </div>
 
-      {/* Mois affiché — pleine largeur du conteneur */}
+      {/* Grille du mois */}
       <MonthGrid
         year={currentMonth.year}
         month={currentMonth.month}
@@ -292,15 +307,19 @@ export default function AvailabilityCalendar({ lang, onDatesChange, initialCheck
         checkIn={checkIn}
         checkOut={checkOut}
         hoverDate={hoverDate}
+        hoverRangeIsInvalid={hoverRangeIsInvalid}
         onDayClick={handleDayClick}
         onDayHover={setHoverDate}
       />
 
-      {/* Légende — uniquement Occupé et Sélectionné */}
+      {/* Légende — Occupé + Sélectionné uniquement */}
       <div className="mt-6 flex items-center gap-x-6 gap-y-2 text-sm text-charcoal-600 justify-center flex-wrap">
         <div className="flex items-center gap-1.5">
-          <span className="w-5 h-5 rounded bg-charcoal-100 border border-charcoal-200 flex items-center justify-center">
-            <span className="text-[9px] font-medium text-charcoal-400 line-through">8</span>
+          <span
+            className="w-5 h-5 rounded flex items-center justify-center"
+            style={{ backgroundColor: "#D3D3D3" }}
+          >
+            <span className="text-[9px] font-medium text-[#888] line-through">8</span>
           </span>
           <span>{labels.booked}</span>
         </div>

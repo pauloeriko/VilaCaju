@@ -3,7 +3,7 @@ import type { Room, AmenityCategory } from "@/types";
 export const rooms: Room[] = [
   {
     id: "master",
-    name: { fr: "Suite Master", en: "Master Suite", pt: "Su\u00edte Master" },
+    name: { fr: "Suite Master", en: "Master Suite", pt: "Suíte Master" },
     capacity: 2,
     beds: { fr: "1 lit king-size", en: "1 king bed", pt: "1 cama king" },
     ensuite: true,
@@ -19,7 +19,7 @@ export const rooms: Room[] = [
   },
   {
     id: "ocean",
-    name: { fr: "Chambre Oc\u00e9an", en: "Ocean Room", pt: "Quarto Oceano" },
+    name: { fr: "Chambre Océan", en: "Ocean Room", pt: "Quarto Oceano" },
     capacity: 3,
     beds: { fr: "1 lit double + 1 lit simple", en: "1 double + 1 single bed", pt: "1 cama casal + 1 solteiro" },
     ensuite: true,
@@ -49,6 +49,14 @@ export const rooms: Room[] = [
     ensuite: true,
     image: "/images/photo-chambre4.jpg",
   },
+  {
+    id: "brisa",
+    name: { fr: "Chambre Brisa", en: "Brisa Room", pt: "Quarto Brisa" },
+    capacity: 2,
+    beds: { fr: "1 lit double", en: "1 double bed", pt: "1 cama casal" },
+    ensuite: true,
+    image: "/images/villa-chambre-master-king.jpg",
+  },
 ];
 
 export const amenityCategories: AmenityCategory[] = [
@@ -56,40 +64,41 @@ export const amenityCategories: AmenityCategory[] = [
     title: { fr: "Piscine & Jardin", en: "Pool & Garden", pt: "Piscina & Jardim" },
     icon: "Waves",
     items: [
-      { icon: "Waves", label: { fr: "Piscine priv\u00e9e", en: "Private pool", pt: "Piscina privativa" } },
+      { icon: "Waves", label: { fr: "Piscine privée", en: "Private pool", pt: "Piscina privativa" } },
       { icon: "TreePalm", label: { fr: "Jardin tropical", en: "Tropical garden", pt: "Jardim tropical" } },
-      { icon: "Armchair", label: { fr: "Terrasse meubl\u00e9e", en: "Furnished terrace", pt: "Terra\u00e7o mobiliado" } },
+      { icon: "Armchair", label: { fr: "Terrasse meublée", en: "Furnished terrace", pt: "Terraço mobiliado" } },
       { icon: "Flame", label: { fr: "Barbecue", en: "BBQ grill", pt: "Churrasqueira" } },
     ],
   },
   {
-    title: { fr: "Cuisine & Repas", en: "Kitchen & Dining", pt: "Cozinha & Refei\u00e7\u00f5es" },
+    title: { fr: "Cuisine & Repas", en: "Kitchen & Dining", pt: "Cozinha & Refeições" },
     icon: "UtensilsCrossed",
     items: [
-      { icon: "UtensilsCrossed", label: { fr: "Cuisine \u00e9quip\u00e9e", en: "Fully equipped kitchen", pt: "Cozinha equipada" } },
-      { icon: "Coffee", label: { fr: "Machine \u00e0 caf\u00e9", en: "Coffee machine", pt: "M\u00e1quina de caf\u00e9" } },
-      { icon: "Wine", label: { fr: "Cave \u00e0 vin", en: "Wine cellar", pt: "Adega" } },
-      { icon: "ChefHat", label: { fr: "Chef sur demande", en: "Private chef", pt: "Chef particular" } },
+      { icon: "UtensilsCrossed", label: { fr: "Cuisine équipée", en: "Fully equipped kitchen", pt: "Cozinha equipada" } },
+      { icon: "Coffee", label: { fr: "Machine à café", en: "Coffee machine", pt: "Máquina de café" } },
+      { icon: "Wine", label: { fr: "Cave à vin", en: "Wine cellar", pt: "Adega" } },
+      { icon: "ChefHat", label: { fr: "Chef sur demande (option)", en: "Private chef (option)", pt: "Chef particular (opção)" } },
     ],
   },
   {
     title: { fr: "Divertissement", en: "Entertainment", pt: "Entretenimento" },
     icon: "Tv",
     items: [
-      { icon: "Tv", label: { fr: "TV \u00e9cran plat", en: "Flat screen TV", pt: "TV tela plana" } },
-      { icon: "Wifi", label: { fr: "Wi-Fi haut d\u00e9bit", en: "High-speed Wi-Fi", pt: "Wi-Fi alta velocidade" } },
-      { icon: "Music", label: { fr: "Syst\u00e8me audio", en: "Sound system", pt: "Sistema de som" } },
-      { icon: "Gamepad2", label: { fr: "Jeux de soci\u00e9t\u00e9", en: "Board games", pt: "Jogos de tabuleiro" } },
+      { icon: "Tv", label: { fr: "TV écran plat", en: "Flat screen TV", pt: "TV tela plana" } },
+      { icon: "Wifi", label: { fr: "Wi-Fi haut débit", en: "High-speed Wi-Fi", pt: "Wi-Fi alta velocidade" } },
+      { icon: "Music", label: { fr: "Système audio", en: "Sound system", pt: "Sistema de som" } },
+      { icon: "Gamepad2", label: { fr: "Jeux de société", en: "Board games", pt: "Jogos de tabuleiro" } },
     ],
   },
   {
-    title: { fr: "Services", en: "Services", pt: "Servi\u00e7os" },
+    title: { fr: "Services", en: "Services", pt: "Serviços" },
     icon: "ConciergeBell",
     items: [
-      { icon: "SprayCan", label: { fr: "M\u00e9nage quotidien", en: "Daily housekeeping", pt: "Limpeza di\u00e1ria" } },
-      { icon: "Car", label: { fr: "Parking priv\u00e9", en: "Private parking", pt: "Estacionamento privativo" } },
-      { icon: "ShieldCheck", label: { fr: "S\u00e9curit\u00e9 24h", en: "24h security", pt: "Seguran\u00e7a 24h" } },
-      { icon: "Plane", label: { fr: "Transfert a\u00e9roport", en: "Airport transfer", pt: "Transfer aeroporto" } },
+      { icon: "SprayCan", label: { fr: "Ménage quotidien", en: "Daily housekeeping", pt: "Limpeza diária" } },
+      { icon: "Car", label: { fr: "Parking privé", en: "Private parking", pt: "Estacionamento privativo" } },
+      { icon: "Plane", label: { fr: "Transfert aéroport (option)", en: "Airport transfer (option)", pt: "Transfer aeroporto (opção)" } },
+      { icon: "Footprints", label: { fr: "Sortie à cheval (option)", en: "Horse riding (option)", pt: "Passeio a cavalo (opção)" } },
+      { icon: "Route", label: { fr: "Location de buggy (option)", en: "Buggy rental (option)", pt: "Aluguel de buggy (opção)" } },
     ],
   },
 ];

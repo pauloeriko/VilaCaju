@@ -47,18 +47,10 @@ export const cancellationPolicies: CancellationPolicy[] = [
       { daysBeforeCheckin: 0,  refundPercent: 0,   label: { fr: "Non remboursable à moins de 45 jours", en: "Non-refundable within 45 days", pt: "Não reembolsável com menos de 45 dias" } },
     ],
   },
-  {
-    seasonType: "peak",
-    title: { fr: "Très Haute saison — Réveillon", en: "Peak season — New Year Eve", pt: "Altíssima temporada — Réveillon" },
-    rules: [
-      { daysBeforeCheckin: 0, refundPercent: 0, label: { fr: "Non remboursable, non modifiable", en: "Non-refundable, non-modifiable", pt: "Não reembolsável, não modificável" } },
-    ],
-  },
 ];
 
 export const paymentConditions: PaymentCondition[] = [
   { seasonType: "low",  depositPercent: 30, balanceDaysBeforeCheckin: 30, fullPaymentAtBooking: false },
   { seasonType: "mid",  depositPercent: 30, balanceDaysBeforeCheckin: 30, fullPaymentAtBooking: false },
   { seasonType: "high", depositPercent: 40, balanceDaysBeforeCheckin: 45, fullPaymentAtBooking: false },
-  { seasonType: "peak", depositPercent: 100, balanceDaysBeforeCheckin: 0, fullPaymentAtBooking: true },
 ];
