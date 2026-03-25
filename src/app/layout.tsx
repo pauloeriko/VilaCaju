@@ -17,6 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://vilacaju.com"),
   title: "Vila Caju",
   description: "Luxury villa in Pontal de Macei\u00f3, Brazil",
 };
