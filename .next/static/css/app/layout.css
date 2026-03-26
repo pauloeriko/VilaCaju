@@ -1840,14 +1840,8 @@
   .\[background\:linear-gradient\(to_right\,\#3A9BBF_35\%\,\#C4B8A3_65\%\)\] {
     background: linear-gradient(to right,#3A9BBF 35%,#C4B8A3 65%);
   }
-  .\[background\:linear-gradient\(to_right\,\#3A9BBF_50\%\,\#C4B8A3_50\%\)\] {
-    background: linear-gradient(to right,#3A9BBF 50%,#C4B8A3 50%);
-  }
   .\[background\:linear-gradient\(to_right\,\#C4B8A3_35\%\,\#D4845A_65\%\)\] {
     background: linear-gradient(to right,#C4B8A3 35%,#D4845A 65%);
-  }
-  .\[background\:linear-gradient\(to_right\,\#C4B8A3_50\%\,\#D4845A_50\%\)\] {
-    background: linear-gradient(to right,#C4B8A3 50%,#D4845A 50%);
   }
   .group-hover\:scale-105 {
     &:is(:where(.group):hover *) {

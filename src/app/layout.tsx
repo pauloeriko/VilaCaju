@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://vilacaju.com"),
   title: "Vila Caju",
   description: "Luxury villa in Pontal de Macei\u00f3, Brazil",
+  icons: {
+    icon: "/images/flavicone.png",
+    apple: "/images/flavicone.png",
+  },
 };
 
 export default function RootLayout({
