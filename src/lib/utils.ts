@@ -28,7 +28,7 @@ export function brlToEur(brl: number): number {
   return Math.round(brl / EUR_RATE);
 }
 
-export const WHATSAPP_NUMBER = "5582999999999";
+export const WHATSAPP_NUMBER = "33759568241";
 
 export function buildWhatsAppUrl(message: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

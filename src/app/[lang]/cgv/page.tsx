@@ -34,7 +34,7 @@ export default async function CgvPage({
         <div className="space-y-8 text-charcoal-700/70 text-sm leading-relaxed">
           <section>
             <h2 className="font-heading text-xl font-semibold text-charcoal-800 mb-3">1. Objet</h2>
-            <p>Les présentes conditions régissent la location saisonnière de la Vila Caju, propriété privée située à Pontal de Maceió, Alagoas, Brésil. Toute réservation implique l&apos;acceptation pleine et entière des présentes CGV.</p>
+            <p>Les présentes conditions régissent la location saisonnière de la Vila Caju, propriété privée située à Pontal de Maceió, Fortim - CE, Brésil. Toute réservation implique l&apos;acceptation pleine et entière des présentes CGV.</p>
           </section>
 
           <section>

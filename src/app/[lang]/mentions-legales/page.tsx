@@ -34,9 +34,9 @@ export default async function MentionsLegalesPage({
         <h2 className="font-heading text-xl font-semibold text-charcoal-800 mt-8 mb-3">Éditeur du site</h2>
         <p className="text-charcoal-700/70 text-sm leading-relaxed">
           Vila Caju — Location saisonnière de luxe<br />
-          Pontal de Maceió, Flexeiras, Alagoas, Brasil<br />
+          R. C - Pontal de Maceio, Fortim - CE, 62815-000, Brasil<br />
           Email : contact@vilacaju.com<br />
-          WhatsApp : +55 82 99999-9999
+          WhatsApp : +33 7 59 56 82 41
         </p>
 
         <h2 className="font-heading text-xl font-semibold text-charcoal-800 mt-8 mb-3">Hébergement</h2>
