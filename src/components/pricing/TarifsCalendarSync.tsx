@@ -51,7 +51,6 @@ export default function TarifsCalendarSync({
             highLabel={dict.highSeason}
             midLabel={dict.midSeason}
             lowLabel={dict.lowSeason}
-            closedLabel={dict.closedSeason}
           />
         </div>
       </div>

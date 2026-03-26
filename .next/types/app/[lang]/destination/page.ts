@@ -1,8 +1,8 @@
-// File: /Users/paul-eric/sources/vila_caju_claude/src/app/[lang]/avis/page.tsx
-import * as entry from '../../../../../src/app/[lang]/avis/page.js'
+// File: /Users/paul-eric/sources/vila_caju_claude/src/app/[lang]/destination/page.tsx
+import * as entry from '../../../../../src/app/[lang]/destination/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../../src/app/[lang]/avis/page.js')
+type TEntry = typeof import('../../../../../src/app/[lang]/destination/page.js')
 
 type SegmentParams<T extends Object = any> = T extends Record<string, any>
   ? { [K in keyof T]: T[K] extends string ? string | string[] | undefined : never }

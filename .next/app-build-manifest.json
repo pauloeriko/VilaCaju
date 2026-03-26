@@ -21,10 +21,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/[lang]/page.js"
     ],
-    "/[lang]/avis/page": [
+    "/[lang]/destination/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[lang]/avis/page.js"
+      "static/chunks/app/[lang]/destination/page.js"
     ]
   }
 }

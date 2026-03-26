@@ -77,19 +77,19 @@ export const pricingConfig: PricingConfig = {
       minStay: 3,
     },
 
-    // ── Fermeture annuelle : 1 Mar – 31 Mai ─────────────────────────────────
+    // ── Moyenne saison : Mars – Mai ──────────────────────────────────────────
     {
-      id: "closed",
-      type: "closed",
+      id: "mid-spring",
+      type: "mid",
       label: {
-        fr: "Fermeture annuelle",
-        en: "Annual closure",
-        pt: "Fechamento anual",
+        fr: "Moyenne saison",
+        en: "Mid season",
+        pt: "Média temporada",
       },
       startMonth: 3, startDay: 1,
       endMonth: 5,   endDay: 31,
-      pricePerNight: 0,
-      minStay: 0,
+      pricePerNight: 6200,
+      minStay: 3,
     },
   ],
 };

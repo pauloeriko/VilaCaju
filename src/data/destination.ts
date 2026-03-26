@@ -19,7 +19,7 @@ export const activities: Activity[] = [
       en: "Ride along wild beaches and dunes on horseback — an unforgettable experience at sunset.",
       pt: "Aventure-se em praias selvagens e dunas a cavalo — uma experiência inesquecível ao pôr do sol.",
     },
-    image: "/images/destination-plage-sable-blanc.jpg",
+    image: "/images/cheval-sand.png",
   },
   {
     icon: "Route",
@@ -29,7 +29,7 @@ export const activities: Activity[] = [
       en: "Explore the region's spectacular landscapes — lagoons, cliffs and fishing villages — by buggy.",
       pt: "Explore as paisagens espetaculares da região — lagoas, falésias e vilas de pescadores — de buggy.",
     },
-    image: "/images/destination-eaux-turquoise.jpg",
+    image: "/images/buggy-sand.JPG",
   },
   {
     icon: "Sailboat",

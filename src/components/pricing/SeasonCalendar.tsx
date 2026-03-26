@@ -9,7 +9,6 @@ interface SeasonCalendarProps {
   highLabel: string;
   midLabel: string;
   lowLabel: string;
-  closedLabel: string;
 }
 
 const months: Record<Locale, string[]> = {
@@ -18,23 +17,16 @@ const months: Record<Locale, string[]> = {
   pt: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
 };
 
-// Nouvelles saisons :
-// Haute (8000R$) : 16 Déc – Fin Fév
-// Moyenne (6200R$) : Juil + Août + 16 Oct – 15 Déc
-// Basse (5400R$) : Juin + 1 Sep – 15 Oct
-// Fermeture : 1 Mar – 31 Mai
-const monthSeasons: (
-  | "high"
-  | "mid"
-  | "low"
-  | "closed"
-  | "mixed"
-)[] = [
+// Saisons :
+// Haute (8000R$)   : 16 Déc – Fin Fév
+// Moyenne (6200R$) : Mars – Mai + Juil – Août + 16 Oct – 15 Déc
+// Basse (5400R$)   : Juin + 1 Sep – 15 Oct
+const monthSeasons: ("high" | "mid" | "low" | "mixed")[] = [
   "high",    // Jan  : haute saison
   "high",    // Fév  : haute saison
-  "closed",  // Mar  : fermeture
-  "closed",  // Avr  : fermeture
-  "closed",  // Mai  : fermeture
+  "mid",     // Mar  : moyenne saison
+  "mid",     // Avr  : moyenne saison
+  "mid",     // Mai  : moyenne saison
   "low",     // Jun  : basse saison
   "mid",     // Jul  : moyenne saison
   "mid",     // Aoû  : moyenne saison
@@ -45,11 +37,10 @@ const monthSeasons: (
 ];
 
 const seasonStyles: Record<string, string> = {
-  high:   "bg-terracotta-400 text-white",
-  mid:    "bg-sand-400 text-white",
-  low:    "bg-ocean-400 text-white",
-  closed: "bg-charcoal-800 text-white",
-  mixed:  "bg-gradient-to-r from-ocean-300 via-sand-300 to-terracotta-300 text-charcoal-800",
+  high:  "bg-terracotta-400 text-white",
+  mid:   "bg-sand-400 text-white",
+  low:   "bg-ocean-400 text-white",
+  mixed: "bg-gradient-to-r from-ocean-300 via-sand-300 to-terracotta-300 text-charcoal-800",
 };
 
 export default function SeasonCalendar({
@@ -57,7 +48,6 @@ export default function SeasonCalendar({
   highLabel,
   midLabel,
   lowLabel,
-  closedLabel,
 }: SeasonCalendarProps) {
   return (
     <div>
@@ -88,10 +78,6 @@ export default function SeasonCalendar({
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-ocean-400" />
           <span className="text-charcoal-700/70">{lowLabel}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-charcoal-800" />
-          <span className="text-charcoal-700/70">{closedLabel}</span>
         </div>
       </div>
     </div>

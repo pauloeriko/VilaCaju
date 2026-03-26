@@ -39,7 +39,7 @@ export default async function RatesPage({
   // ── Cartes de prix ────────────────────────────────────────────────────
   const priceCards = (
     <SectionWrapper>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Basse saison : Juin + 1 Sep – 15 Oct */}
         <PriceCard
           title={dict.rates.lowSeason}
@@ -63,11 +63,19 @@ export default async function RatesPage({
           nightsLabel={dict.rates.nights}
         />
 
-        {/* Moyenne saison : Juil + Août + 16 Oct – 15 Déc */}
+        {/* Moyenne saison : Mars – Mai + Juil – Août + 16 Oct – 15 Déc */}
         <PriceCard
           title={dict.rates.midSeason}
           seasonType="mid"
           periods={[
+            {
+              dates:
+                lang === "fr"
+                  ? "Mars – Mai"
+                  : lang === "pt"
+                  ? "Março – Maio"
+                  : "March – May",
+            },
             {
               dates:
                 lang === "fr"
@@ -115,27 +123,6 @@ export default async function RatesPage({
           nightsLabel={dict.rates.nights}
         />
 
-        {/* Fermeture annuelle : 1 Mar – 31 Mai */}
-        <PriceCard
-          title={dict.rates.closedSeason}
-          seasonType="closed"
-          periods={[
-            {
-              dates:
-                lang === "fr"
-                  ? "1 Mars – 31 Mai"
-                  : lang === "pt"
-                  ? "1 Março – 31 Maio"
-                  : "March 1 – May 31",
-            },
-          ]}
-          pricePerNight={0}
-          minStay={0}
-          lang={lang as Locale}
-          perNightLabel={dict.rates.perNight}
-          minStayLabel={dict.rates.minStay}
-          nightsLabel={dict.rates.nights}
-        />
       </div>
     </SectionWrapper>
   );
