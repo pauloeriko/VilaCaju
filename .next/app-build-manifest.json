@@ -16,15 +16,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/[lang]/layout.js"
     ],
-    "/[lang]/page": [
+    "/[lang]/tarifs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/[lang]/page.js"
-    ],
-    "/[lang]/destination/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/[lang]/destination/page.js"
+      "static/chunks/app/[lang]/tarifs/page.js"
     ]
   }
 }

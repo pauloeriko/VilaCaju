@@ -21,26 +21,29 @@ const months: Record<Locale, string[]> = {
 // Haute (8000R$)   : 16 Déc – Fin Fév
 // Moyenne (6200R$) : Mars – Mai + Juil – Août + 16 Oct – 15 Déc
 // Basse (5400R$)   : Juin + 1 Sep – 15 Oct
-const monthSeasons: ("high" | "mid" | "low" | "mixed")[] = [
-  "high",    // Jan  : haute saison
-  "high",    // Fév  : haute saison
-  "mid",     // Mar  : moyenne saison
-  "mid",     // Avr  : moyenne saison
-  "mid",     // Mai  : moyenne saison
-  "low",     // Jun  : basse saison
-  "mid",     // Jul  : moyenne saison
-  "mid",     // Aoû  : moyenne saison
-  "low",     // Sep  : basse saison (Sep 1 – Oct 15)
-  "mixed",   // Oct  : basse (1-15) + moyenne (16-31)
-  "mid",     // Nov  : moyenne saison
-  "mixed",   // Déc  : moyenne (1-15) + haute (16-31)
+const monthSeasons: ("high" | "mid" | "low" | "mixed-oct" | "mixed-dec")[] = [
+  "high",       // Jan  : haute saison
+  "high",       // Fév  : haute saison
+  "mid",        // Mar  : moyenne saison
+  "mid",        // Avr  : moyenne saison
+  "mid",        // Mai  : moyenne saison
+  "low",        // Jun  : basse saison
+  "mid",        // Jul  : moyenne saison
+  "mid",        // Aoû  : moyenne saison
+  "low",        // Sep  : basse saison (Sep 1 – Oct 15)
+  "mixed-oct",  // Oct  : basse (1-15) → moyenne (16-31)
+  "mid",        // Nov  : moyenne saison
+  "mixed-dec",  // Déc  : moyenne (1-15) → haute (16-31)
 ];
 
 const seasonStyles: Record<string, string> = {
-  high:  "bg-terracotta-400 text-white",
-  mid:   "bg-sand-400 text-white",
-  low:   "bg-ocean-400 text-white",
-  mixed: "bg-gradient-to-r from-ocean-300 via-sand-300 to-terracotta-300 text-charcoal-800",
+  high:      "bg-terracotta-400 text-white",
+  mid:       "bg-sand-400 text-white",
+  low:       "bg-ocean-400 text-white",
+  // Oct : basse → moyenne, transition subtile centrée au milieu
+  "mixed-oct": "[background:linear-gradient(to_right,#3A9BBF_35%,#C4B8A3_65%)] text-white",
+  // Déc : moyenne → haute, transition subtile centrée au milieu
+  "mixed-dec": "[background:linear-gradient(to_right,#C4B8A3_35%,#D4845A_65%)] text-white",
 };
 
 export default function SeasonCalendar({
