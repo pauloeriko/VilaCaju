@@ -55,9 +55,9 @@ const faqItems: FaqItem[] = [
       pt: "Há um depósito de segurança?",
     },
     answer: {
-      fr: "Oui, un dépôt de garantie de 1 000€ à 2 500€ est pré-autorisé sur votre carte bancaire 48h avant l'arrivée. Il est intégralement restitué dans les 7 jours suivant votre départ, en l'absence de dommages.",
-      en: "Yes, a security deposit of €1,000–€2,500 is pre-authorized on your credit card 48h before arrival. It is fully returned within 7 days after your departure, in the absence of damage.",
-      pt: "Sim, um depósito de segurança de €1.000–€2.500 é pré-autorizado no seu cartão 48h antes da chegada. É devolvido integralmente em 7 dias após a saída, na ausência de danos.",
+      fr: "Oui, un dépôt de garantie de 2 500€ est pré-autorisé sur votre carte bancaire 48h avant l'arrivée. Il est intégralement restitué dans les 7 jours suivant votre départ, en l'absence de dommages.",
+      en: "Yes, a security deposit of €2,500 is pre-authorized on your credit card 48h before arrival. It is fully returned within 7 days after your departure, in the absence of damage.",
+      pt: "Sim, um depósito de segurança de 2.500 é pré-autorizado no seu cartão 48h antes da chegada. É devolvido integralmente em 7 dias após a saída, na ausência de danos.",
     },
   },
   {
