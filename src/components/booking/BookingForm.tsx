@@ -2,13 +2,11 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { MessageCircle, ShieldCheck, ShieldAlert, ShieldX, AlertTriangle } from "lucide-react";
+import { MessageCircle, ShieldX, AlertTriangle } from "lucide-react";
 import { calculatePrice } from "@/lib/pricing/calculator";
 import { formatCurrency, brlToEur, buildWhatsAppUrl } from "@/lib/utils";
 import { pricingConfig } from "@/lib/pricing/seasons";
 import { rangeContainsUnavailable } from "@/lib/pricing/availability";
-import { cancellationPolicies, type CancellationPolicy } from "@/data/policies";
-import type { SeasonType } from "@/lib/pricing/types";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import DatePicker from "./DatePicker";
@@ -32,62 +30,6 @@ interface FormState {
   message: string;
 }
 
-// Ordre de sévérité : peak > high > mid > low > closed
-const SEVERITY: Record<SeasonType, number> = {
-  peak: 4,
-  high: 3,
-  mid: 2,
-  low: 1,
-  closed: 0,
-};
-
-function getDominantPolicy(checkIn: string, checkOut: string): CancellationPolicy | null {
-  if (!checkIn || !checkOut) return null;
-  const ci = new Date(checkIn);
-  const co = new Date(checkOut);
-  if (co <= ci) return null;
-
-  let dominant: SeasonType | null = null;
-  const current = new Date(ci);
-
-  while (current < co) {
-    const month = current.getMonth() + 1;
-    const day = current.getDate();
-
-    for (const season of pricingConfig.seasons) {
-      const { startMonth, startDay, endMonth, endDay, type } = season;
-      let matches = false;
-      if (startMonth <= endMonth) {
-        matches =
-          (month > startMonth || (month === startMonth && day >= startDay)) &&
-          (month < endMonth || (month === endMonth && day <= endDay));
-      } else {
-        matches =
-          month > startMonth ||
-          (month === startMonth && day >= startDay) ||
-          month < endMonth ||
-          (month === endMonth && day <= endDay);
-      }
-      if (matches) {
-        if (dominant === null || SEVERITY[type] > SEVERITY[dominant]) {
-          dominant = type;
-        }
-        break;
-      }
-    }
-    current.setDate(current.getDate() + 1);
-  }
-
-  if (!dominant || dominant === "closed") return null;
-  return cancellationPolicies.find((p) => p.seasonType === dominant) ?? null;
-}
-
-const POLICY_ICON: Record<string, React.ReactNode> = {
-  low: <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />,
-  mid: <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />,
-  high: <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />,
-  peak: <ShieldX className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />,
-};
 
 export default function BookingForm({ lang, dict }: BookingFormProps) {
   const searchParams = useSearchParams();
@@ -148,11 +90,6 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
     if (co <= ci) return null;
     return calculatePrice(ci, co, lang);
   }, [form.checkIn, form.checkOut, lang]);
-
-  const applicablePolicy = useMemo(
-    () => getDominantPolicy(form.checkIn, form.checkOut),
-    [form.checkIn, form.checkOut]
-  );
 
   function validate(): boolean {
     const errs: Partial<Record<keyof FormState, string>> = {};
@@ -451,24 +388,22 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
                 );
               })()}
 
-              {/* Politique d'annulation applicable */}
-              {applicablePolicy && (
-                <div className="mt-4 border-t border-sand-200 pt-4">
-                  <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
-                    {dict.cancellationPolicy}
-                  </p>
-                  <div className="space-y-1.5">
-                    {applicablePolicy.rules.map((rule, i) => (
-                      <div key={i} className="flex items-start gap-1.5">
-                        {POLICY_ICON[applicablePolicy.seasonType]}
-                        <span className="text-xs text-charcoal-700/80">
-                          {rule.label[lang]}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+              {/* Politique d'annulation */}
+              <div className="mt-4 border-t border-sand-200 pt-4">
+                <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
+                  {dict.cancellationPolicy}
+                </p>
+                <div className="flex items-start gap-1.5">
+                  <ShieldX className="w-4 h-4 text-terracotta-400 shrink-0 mt-0.5" />
+                  <span className="text-xs text-charcoal-700/80">
+                    {lang === "fr"
+                      ? "Les séjours sont fermes et définitifs — aucun remboursement en cas d'annulation."
+                      : lang === "pt"
+                      ? "As reservas são firmes e definitivas — sem reembolso em caso de cancelamento."
+                      : "Bookings are firm and final — no refund in case of cancellation."}
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           ) : (
             <p className="text-sm text-charcoal-700/50 italic">

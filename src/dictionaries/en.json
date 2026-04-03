@@ -106,10 +106,7 @@
     "paymentDeposit": "Deposit at booking",
     "paymentBalance": "Balance before arrival",
     "paymentFull": "Full payment at booking",
-    "cancellationTitle": "Cancellation policies",
-    "cancellationFull": "Full refund",
-    "cancellationPartial": "Partial refund",
-    "cancellationNone": "Non-refundable",
+    "cancellationTitle": "Cancellation policy",
     "faqTitle": "Frequently asked questions"
   },
   "booking": {

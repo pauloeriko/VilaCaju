@@ -2,64 +2,16 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { ShieldCheck, ShieldAlert, ShieldX, AlertTriangle } from "lucide-react";
+import { ShieldX, AlertTriangle } from "lucide-react";
 import { calculatePrice } from "@/lib/pricing/calculator";
 import { formatCurrency, brlToEur } from "@/lib/utils";
 import { useCurrency } from "@/lib/currency/CurrencyContext";
-import { cancellationPolicies, type CancellationPolicy } from "@/data/policies";
 import { pricingConfig } from "@/lib/pricing/seasons";
 import { rangeContainsUnavailable } from "@/lib/pricing/availability";
-import type { SeasonType } from "@/lib/pricing/types";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const MIN_NIGHTS = 3;
-
-// ─── Politique d'annulation dominante ────────────────────────────────────────
-const SEVERITY: Record<SeasonType, number> = { peak: 4, high: 3, mid: 2, low: 1, closed: 0 };
-
-function getDominantPolicy(checkIn: string, checkOut: string): CancellationPolicy | null {
-  if (!checkIn || !checkOut) return null;
-  const ci = new Date(checkIn);
-  const co = new Date(checkOut);
-  if (co <= ci) return null;
-
-  let dominant: SeasonType | null = null;
-  const current = new Date(ci);
-
-  while (current < co) {
-    const month = current.getMonth() + 1;
-    const day = current.getDate();
-    for (const season of pricingConfig.seasons) {
-      const { startMonth, startDay, endMonth, endDay, type } = season;
-      let matches = false;
-      if (startMonth <= endMonth) {
-        matches =
-          (month > startMonth || (month === startMonth && day >= startDay)) &&
-          (month < endMonth   || (month === endMonth   && day <= endDay));
-      } else {
-        matches =
-          month > startMonth || (month === startMonth && day >= startDay) ||
-          month < endMonth   || (month === endMonth   && day <= endDay);
-      }
-      if (matches) {
-        if (dominant === null || SEVERITY[type] > SEVERITY[dominant]) dominant = type;
-        break;
-      }
-    }
-    current.setDate(current.getDate() + 1);
-  }
-
-  if (!dominant || dominant === "closed") return null;
-  return cancellationPolicies.find((p) => p.seasonType === dominant) ?? null;
-}
-
-const POLICY_ICON: Record<string, React.ReactNode> = {
-  low:  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />,
-  mid:  <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />,
-  high: <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />,
-  peak: <ShieldX    className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />,
-};
 
 // ─────────────────────────────────────────────────────────────────────────────
 interface PriceCalculatorProps {
@@ -106,11 +58,6 @@ export default function PriceCalculator({
     const co = new Date(checkOut);
     return Math.max(0, Math.round((co.getTime() - ci.getTime()) / (1000 * 60 * 60 * 24)));
   }, [checkIn, checkOut]);
-
-  const applicablePolicy = useMemo(
-    () => getDominantPolicy(checkIn, checkOut),
-    [checkIn, checkOut]
-  );
 
   const minStayWarning = nightsCount > 0 && nightsCount < MIN_NIGHTS;
 
@@ -231,28 +178,26 @@ export default function PriceCalculator({
         </div>
       )}
 
-      {/* Politique d'annulation — toujours visible dès que des dates sont choisies */}
-      {applicablePolicy && (
-        <div className="border-t border-sand-200 pt-4 mt-4">
-          <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
+      {/* Politique d'annulation */}
+      <div className="border-t border-sand-200 pt-4 mt-4">
+        <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
+          {lang === "fr"
+            ? "Politique d'annulation"
+            : lang === "pt"
+            ? "Política de cancelamento"
+            : "Cancellation policy"}
+        </p>
+        <div className="flex items-start gap-1.5">
+          <ShieldX className="w-4 h-4 text-terracotta-400 shrink-0 mt-0.5" />
+          <span className="text-xs text-charcoal-700/80">
             {lang === "fr"
-              ? "Politique d'annulation applicable"
+              ? "Les séjours sont fermes et définitifs — aucun remboursement en cas d'annulation."
               : lang === "pt"
-              ? "Política de cancelamento aplicável"
-              : "Applicable cancellation policy"}
-          </p>
-          <div className="space-y-1.5">
-            {applicablePolicy.rules.map((rule, i) => (
-              <div key={i} className="flex items-start gap-1.5">
-                {POLICY_ICON[applicablePolicy.seasonType]}
-                <span className="text-xs text-charcoal-700/80">
-                  {rule.label[lang]}
-                </span>
-              </div>
-            ))}
-          </div>
+              ? "As reservas são firmes e definitivas — sem reembolso em caso de cancelamento."
+              : "Bookings are firm and final — no refund in case of cancellation."}
+          </span>
         </div>
-      )}
+      </div>
 
       {/* CTA réservation */}
       {checkIn && checkOut && !minStayWarning && !rangeError && (

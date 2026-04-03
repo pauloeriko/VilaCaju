@@ -1,4 +1,14 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/[lang]/avis/page": "app/[lang]/avis/page.js",
   "/[lang]/page": "app/[lang]/page.js",
-  "/[lang]/tarifs/page": "app/[lang]/tarifs/page.js"
+  "/[lang]/tarifs/page": "app/[lang]/tarifs/page.js",
+  "/[lang]/cgv/page": "app/[lang]/cgv/page.js",
+  "/[lang]/mentions-legales/page": "app/[lang]/mentions-legales/page.js",
+  "/[lang]/confidentialite/page": "app/[lang]/confidentialite/page.js",
+  "/[lang]/villa/page": "app/[lang]/villa/page.js",
+  "/[lang]/faq/page": "app/[lang]/faq/page.js",
+  "/[lang]/destination/page": "app/[lang]/destination/page.js",
+  "/[lang]/contact/page": "app/[lang]/contact/page.js",
+  "/[lang]/reserver/page": "app/[lang]/reserver/page.js"
 }

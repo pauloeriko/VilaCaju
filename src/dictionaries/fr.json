@@ -106,10 +106,7 @@
     "paymentDeposit": "Acompte à la réservation",
     "paymentBalance": "Solde avant arrivée",
     "paymentFull": "Paiement intégral à la réservation",
-    "cancellationTitle": "Politiques d’annulation",
-    "cancellationFull": "Remboursement intégral",
-    "cancellationPartial": "Remboursement partiel",
-    "cancellationNone": "Non remboursable",
+    "cancellationTitle": "Politique d’annulation",
     "faqTitle": "Questions fréquentes"
   },
   "booking": {

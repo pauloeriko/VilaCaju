@@ -22,35 +22,21 @@ export interface PaymentCondition {
 export const cancellationPolicies: CancellationPolicy[] = [
   {
     seasonType: "low",
-    title: { fr: "Basse saison", en: "Low season", pt: "Baixa temporada" },
+    title: { fr: "Politique d'annulation", en: "Cancellation policy", pt: "Política de cancelamento" },
     rules: [
-      { daysBeforeCheckin: 45, refundPercent: 100, label: { fr: "Remboursement intégral à plus de 45 jours", en: "Full refund more than 45 days before", pt: "Reembolso integral a mais de 45 dias" } },
-      { daysBeforeCheckin: 30, refundPercent: 70,  label: { fr: "70% remboursé entre 30 et 45 jours avant", en: "70% refund between 30 and 45 days before", pt: "70% reembolso entre 30 e 45 dias antes" } },
-      { daysBeforeCheckin: 0,  refundPercent: 0,   label: { fr: "Non remboursable à moins de 30 jours", en: "Non-refundable within 30 days", pt: "Não reembolsável com menos de 30 dias" } },
-    ],
-  },
-  {
-    seasonType: "mid",
-    title: { fr: "Moyenne saison", en: "Mid season", pt: "Média temporada" },
-    rules: [
-      { daysBeforeCheckin: 45, refundPercent: 100, label: { fr: "Remboursement intégral à plus de 45 jours", en: "Full refund more than 45 days before", pt: "Reembolso integral a mais de 45 dias" } },
-      { daysBeforeCheckin: 30, refundPercent: 70,  label: { fr: "70% remboursé entre 30 et 45 jours avant", en: "70% refund between 30 and 45 days before", pt: "70% reembolso entre 30 e 45 dias antes" } },
-      { daysBeforeCheckin: 0,  refundPercent: 0,   label: { fr: "Non remboursable à moins de 30 jours", en: "Non-refundable within 30 days", pt: "Não reembolsável com menos de 30 dias" } },
-    ],
-  },
-  {
-    seasonType: "high",
-    title: { fr: "Haute saison", en: "High season", pt: "Alta temporada" },
-    rules: [
-      { daysBeforeCheckin: 60, refundPercent: 100, label: { fr: "Remboursement intégral à plus de 60 jours", en: "Full refund more than 60 days before", pt: "Reembolso integral a mais de 60 dias" } },
-      { daysBeforeCheckin: 45, refundPercent: 60,  label: { fr: "60% remboursé entre 45 et 60 jours avant", en: "60% refund between 45 and 60 days before", pt: "60% reembolso entre 45 e 60 dias antes" } },
-      { daysBeforeCheckin: 0,  refundPercent: 0,   label: { fr: "Non remboursable à moins de 45 jours", en: "Non-refundable within 45 days", pt: "Não reembolsável com menos de 45 dias" } },
+      {
+        daysBeforeCheckin: 0,
+        refundPercent: 0,
+        label: {
+          fr: "Les séjours sont fermes et définitifs — aucun remboursement en cas d'annulation.",
+          en: "Bookings are firm and final — no refund in case of cancellation.",
+          pt: "As reservas são firmes e definitivas — sem reembolso em caso de cancelamento.",
+        },
+      },
     ],
   },
 ];
 
 export const paymentConditions: PaymentCondition[] = [
-  { seasonType: "low",  depositPercent: 30, balanceDaysBeforeCheckin: 30, fullPaymentAtBooking: false },
-  { seasonType: "mid",  depositPercent: 30, balanceDaysBeforeCheckin: 30, fullPaymentAtBooking: false },
-  { seasonType: "high", depositPercent: 40, balanceDaysBeforeCheckin: 45, fullPaymentAtBooking: false },
+  { seasonType: "low", depositPercent: 30, balanceDaysBeforeCheckin: 45, fullPaymentAtBooking: false },
 ];

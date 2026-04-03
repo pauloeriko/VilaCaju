@@ -106,10 +106,7 @@
     "paymentDeposit": "Entrada na reserva",
     "paymentBalance": "Saldo antes da chegada",
     "paymentFull": "Pagamento integral na reserva",
-    "cancellationTitle": "Políticas de cancelamento",
-    "cancellationFull": "Reembolso integral",
-    "cancellationPartial": "Reembolso parcial",
-    "cancellationNone": "Não reembolsável",
+    "cancellationTitle": "Política de cancelamento",
     "faqTitle": "Perguntas frequentes"
   },
   "booking": {

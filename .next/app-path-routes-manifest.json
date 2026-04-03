@@ -1,0 +1,14 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/[lang]/avis/page": "/[lang]/avis",
+  "/[lang]/page": "/[lang]",
+  "/[lang]/tarifs/page": "/[lang]/tarifs",
+  "/[lang]/cgv/page": "/[lang]/cgv",
+  "/[lang]/mentions-legales/page": "/[lang]/mentions-legales",
+  "/[lang]/confidentialite/page": "/[lang]/confidentialite",
+  "/[lang]/villa/page": "/[lang]/villa",
+  "/[lang]/faq/page": "/[lang]/faq",
+  "/[lang]/destination/page": "/[lang]/destination",
+  "/[lang]/contact/page": "/[lang]/contact",
+  "/[lang]/reserver/page": "/[lang]/reserver"
+}

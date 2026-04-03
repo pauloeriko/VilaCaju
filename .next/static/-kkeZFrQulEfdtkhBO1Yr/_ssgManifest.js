@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002F[lang]","\u002F[lang]\u002Favis","\u002F[lang]\u002Fcgv","\u002F[lang]\u002Fconfidentialite","\u002F[lang]\u002Fcontact","\u002F[lang]\u002Fdestination","\u002F[lang]\u002Ffaq","\u002F[lang]\u002Fmentions-legales","\u002F[lang]\u002Freserver","\u002F[lang]\u002Ftarifs","\u002F[lang]\u002Fvilla"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()

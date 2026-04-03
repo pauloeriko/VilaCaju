@@ -40,19 +40,14 @@ export default async function CgvPage({
           <section>
             <h2 className="font-heading text-xl font-semibold text-charcoal-800 mb-3">2. Réservation & Paiement</h2>
             <ul className="space-y-2 list-disc list-inside">
-              <li><strong>Basse saison :</strong> Acompte de 30% à la réservation — Solde à J-30 avant l&apos;arrivée</li>
-              <li><strong>Haute saison :</strong> Acompte de 40% à la réservation — Solde à J-45 avant l&apos;arrivée</li>
-              <li><strong>Très Haute saison (Réveillon) :</strong> Paiement intégral à la réservation</li>
+              <li>Un acompte de 30% est demandé à la réservation</li>
+              <li>Le solde de 70% est à régler 45 jours avant votre arrivée</li>
             </ul>
           </section>
 
           <section>
             <h2 className="font-heading text-xl font-semibold text-charcoal-800 mb-3">3. Annulation</h2>
-            <ul className="space-y-2 list-disc list-inside">
-              <li><strong>Basse saison :</strong> Remboursement intégral à +45j ; 70% entre 30 et 45j ; 0% à -30j</li>
-              <li><strong>Haute saison :</strong> Remboursement intégral à +60j ; 60% entre 45 et 60j ; 0% à -45j</li>
-              <li><strong>Très Haute saison :</strong> Non remboursable, non modifiable</li>
-            </ul>
+            <p>Les séjours réservés sont fermes et définitifs. En cas d&apos;annulation, les montants versés ne pourront donner lieu à remboursement. Nous vous recommandons vivement de souscrire une assurance voyage couvrant les imprévus.</p>
           </section>
 
           <section>
