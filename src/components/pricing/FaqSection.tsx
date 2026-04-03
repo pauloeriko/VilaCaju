@@ -31,9 +31,9 @@ const faqItems: FaqItem[] = [
       pt: "Como funciona o pagamento?",
     },
     answer: {
-      fr: "Selon la saison, un acompte de 30 à 40% est requis à la réservation. Le solde est réglé 30 à 45 jours avant l'arrivée. Le paiement s'effectue par virement bancaire ou Stripe.",
-      en: "Depending on the season, a deposit of 30–40% is required at booking. The balance is due 30–45 days before arrival. Payment is made by bank transfer or Stripe.",
-      pt: "Dependendo da temporada, um depósito de 30–40% é necessário na reserva. O saldo vence 30–45 dias antes da chegada. O pagamento é feito por transferência bancária ou Stripe.",
+      fr: "Un acompte de 30% est requis à la réservation. Le solde est réglé 45 jours avant l'arrivée. Le paiement s'effectue par virement bancaire ou Stripe.",
+      en: "A deposit of 30% is required at booking. The balance is due 45 days before arrival. Payment is made by bank transfer or Stripe.",
+      pt: "Um depósito de 30% é necessário na reserva. O saldo vence 45 dias antes da chegada. O pagamento é feito por transferência bancária ou Stripe.",
     },
   },
   {
@@ -43,9 +43,9 @@ const faqItems: FaqItem[] = [
       pt: "Posso cancelar minha reserva?",
     },
     answer: {
-      fr: "Les conditions d'annulation varient selon la saison. En basse saison, annulation gratuite jusqu'à 45 jours avant l'arrivée. En haute saison, jusqu'à 60 jours. Consultez la section 'Politiques d'annulation' pour le détail complet.",
-      en: "Cancellation conditions vary by season. In low season, free cancellation up to 45 days before arrival. In high season, up to 60 days. See the 'Cancellation policies' section for full details.",
-      pt: "As condições de cancelamento variam por temporada. Na baixa temporada, cancelamento gratuito até 45 dias antes da chegada. Na alta temporada, até 60 dias. Veja a seção 'Políticas de cancelamento' para detalhes.",
+      fr: "Les séjours réservés sont fermes et définitifs. En cas d'annulation, les montants versés ne pourront donner lieu à remboursement. Nous vous recommandons vivement de souscrire une assurance voyage couvrant les imprévus.",
+      en: "All bookings are firm and final. In case of cancellation, amounts paid cannot be refunded. We strongly recommend purchasing travel insurance to cover unforeseen events.",
+      pt: "As reservas efetuadas são firmes e definitivas. Em caso de cancelamento, os montantes pagos não poderão ser reembolsados. Recomendamos vivamente a contratação de um seguro viagem que cubra imprevistos.",
     },
   },
   {
