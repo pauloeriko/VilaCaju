@@ -55,6 +55,11 @@ export const BOOKED_DATES = new Set<string>([
 
   // Décembre 2026 — 3, 4, 5, 6
   "2026-12-03", "2026-12-04", "2026-12-05", "2026-12-06",
+
+  
+  // Fêtes de fin d'année 2026-2027 — 26 déc → 3 jan
+  "2026-12-26", "2026-12-27", "2026-12-28", "2026-12-29", "2026-12-30", "2026-12-31",
+  "2027-01-01", "2027-01-02", "2027-01-03",
 ]);
 
 export function getSeasonForDay(month: number, day: number): SeasonType | null {
