@@ -73,14 +73,15 @@ export async function getBlockedDates(): Promise<SupabaseResponse<BlockedDate[]>
   return { data, error: null }
 }
 
-// Admin — remplace un blocage manuel par le reliquat qui reste après qu'une
-// réservation en a été extraite. Permet de convertir un gros blocage (ex: tout
-// le mois d'août) en plusieurs réservations distinctes, une à la fois : seule la
-// portion convertie est retirée, le reste demeure bloqué pour la conversion suivante.
-export async function splitBlockedDateAfterConversion(
+// Admin — retire une sous-plage d'un blocage manuel et conserve le reliquat
+// avant/après sous forme de nouveaux blocages. Utilisé aussi bien pour convertir
+// une portion d'un gros blocage (ex: tout le mois d'août) en réservation — seule
+// la portion convertie est retirée, le reste demeure bloqué pour la suite — que
+// pour un simple déblocage partiel sans création de réservation.
+export async function splitBlockedDate(
   blockedDateId: string,
-  convertedStart: string,
-  convertedEnd: string,
+  excludedStart: string,
+  excludedEnd: string,
 ): Promise<SupabaseResponse<null>> {
   const supabase = await createAdminClient()
 
@@ -91,16 +92,16 @@ export async function splitBlockedDateAfterConversion(
     .single()
 
   if (fetchError) {
-    console.error('[splitBlockedDateAfterConversion]', fetchError.message)
+    console.error('[splitBlockedDate]', fetchError.message)
     return { data: null, error: 'Impossible de récupérer le blocage à diviser.' }
   }
 
   const remainders: { date_start: string; date_end: string }[] = []
-  if (convertedStart > original.date_start) {
-    remainders.push({ date_start: original.date_start, date_end: convertedStart })
+  if (excludedStart > original.date_start) {
+    remainders.push({ date_start: original.date_start, date_end: excludedStart })
   }
-  if (convertedEnd < original.date_end) {
-    remainders.push({ date_start: convertedEnd, date_end: original.date_end })
+  if (excludedEnd < original.date_end) {
+    remainders.push({ date_start: excludedEnd, date_end: original.date_end })
   }
 
   const { error: deleteError } = await supabase
@@ -109,7 +110,7 @@ export async function splitBlockedDateAfterConversion(
     .eq('id', blockedDateId)
 
   if (deleteError) {
-    console.error('[splitBlockedDateAfterConversion]', deleteError.message)
+    console.error('[splitBlockedDate]', deleteError.message)
     return { data: null, error: "Impossible de supprimer l'ancien blocage." }
   }
 
@@ -124,7 +125,7 @@ export async function splitBlockedDateAfterConversion(
       })))
 
     if (insertError) {
-      console.error('[splitBlockedDateAfterConversion]', insertError.message)
+      console.error('[splitBlockedDate]', insertError.message)
       return { data: null, error: 'Impossible de créer le reliquat de blocage.' }
     }
   }

@@ -45,6 +45,14 @@ type DayState =
   | { kind: "reservation"; status: "pending" | "confirmed"; reservation: Reservation; isFirst: boolean; isLast: boolean }
   | { kind: "blocked"; blockId: string; isManual: boolean };
 
+// Discriminant utilisé pour interdire les sélections mélangeant plusieurs statuts
+// (libre / blocages différents / réservations différentes) dans une même plage.
+function dayDiscriminant(state: DayState): string {
+  if (state.kind === "blocked") return `blocked:${state.blockId}`;
+  if (state.kind === "reservation") return `reservation:${state.reservation.id}`;
+  return "available";
+}
+
 // ─── MonthGrid ──────────────────────────────────────────────────────────────
 
 interface MonthGridProps {
@@ -165,9 +173,11 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
   const [selectStart, setSelectStart] = useState<string | null>(null);
   const [selectionError, setSelectionError] = useState<string | null>(null);
   const [confirmRange, setConfirmRange] = useState<{ start: string; end: string } | null>(null);
-  const [unblockId, setUnblockId] = useState<string | null>(null);
+  const [unblockTarget, setUnblockTarget] = useState<{ blockId: string; key: string } | null>(null);
   const [convertBlock, setConvertBlock] = useState<BlockedDate | null>(null);
   const [createFromRange, setCreateFromRange] = useState<{ check_in: string; check_out: string } | null>(null);
+  const [confirmBlockedRange, setConfirmBlockedRange] = useState<{ blockId: string; start: string; end: string } | null>(null);
+  const [convertBlockRange, setConvertBlockRange] = useState<{ blockId: string; check_in: string; check_out: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [popover, setPopover] = useState<{ reservation: Reservation; key: string } | null>(null);
@@ -219,37 +229,57 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
   const handleDayClick = useCallback((key: string, state: DayState) => {
     setPopover(null);
 
-    if (state.kind === "reservation") {
-      setPopover({ reservation: state.reservation, key });
-      return;
-    }
-
-    if (state.kind === "blocked" && state.isManual) {
-      setUnblockId(state.blockId);
-      return;
-    }
-
-    if (state.kind !== "available") return;
-
-    if (!selectStart) {
-      setSelectStart(key);
-      setSelectionError(null);
-    } else {
+    // Une sélection est en cours : ce clic en marque la fin, quel que soit son
+    // statut — le mélange de statuts est rejeté ci-dessous plutôt que par des
+    // branches séparées, pour que la règle s'applique de façon uniforme.
+    if (selectStart) {
       const [start, end] = selectStart < key ? [selectStart, key] : [key, selectStart];
       const endExclusive = parseKey(end);
       endExclusive.setDate(endExclusive.getDate() + 1);
       const endStr = toKey(endExclusive.getFullYear(), endExclusive.getMonth() + 1, endExclusive.getDate());
 
-      const kindsInRange = new Set(expandRange(start, endStr).map((k) => dayMap.get(k)?.kind ?? "available"));
-      if (kindsInRange.size > 1) {
+      const discriminants = new Set(
+        expandRange(start, endStr).map((k) => dayDiscriminant(dayMap.get(k) ?? { kind: "available" })),
+      );
+      if (discriminants.size > 1) {
         setSelectionError("Sélection invalide : mélange de dates avec des statuts différents.");
         setSelectStart(null);
         return;
       }
 
-      setConfirmRange({ start, end: endStr });
+      const startState = dayMap.get(start) ?? { kind: "available" as const };
+      if (startState.kind === "blocked") {
+        if (!startState.isManual) {
+          setSelectionError("Ce blocage est automatique (lié à une réservation), il ne peut pas être modifié ici.");
+          setSelectStart(null);
+          return;
+        }
+        setConfirmBlockedRange({ blockId: startState.blockId, start, end: endStr });
+      } else if (startState.kind === "available") {
+        setConfirmRange({ start, end: endStr });
+      } else {
+        // Une plage ne peut pas se terminer sur une réservation seule (voir garde ci-dessus).
+        setSelectionError("Sélection invalide : mélange de dates avec des statuts différents.");
+      }
       setSelectStart(null);
+      return;
     }
+
+    // Pas de sélection en cours : comportement de premier clic.
+    if (state.kind === "reservation") {
+      setPopover({ reservation: state.reservation, key });
+      return;
+    }
+
+    if (state.kind === "blocked") {
+      if (state.isManual) {
+        setUnblockTarget({ blockId: state.blockId, key });
+      }
+      return;
+    }
+
+    setSelectStart(key);
+    setSelectionError(null);
   }, [selectStart, dayMap]);
 
   async function handleBlock() {
@@ -273,25 +303,25 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
   }
 
   async function handleUnblock() {
-    if (!unblockId) return;
+    if (!unblockTarget) return;
     setLoading(true);
-    const res = await fetch(`/api/admin/blocked-dates/${unblockId}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/blocked-dates/${unblockTarget.blockId}`, { method: "DELETE" });
     setLoading(false);
     if (!res.ok && res.status !== 204) {
       const data = await res.json() as { error: string };
       setError(data.error);
       toast("error", data.error);
-      setUnblockId(null);
+      setUnblockTarget(null);
       return;
     }
-    setUnblockId(null);
+    setUnblockTarget(null);
     toast("success", "Date débloquée");
     router.refresh();
   }
 
   function handleConvertClick() {
-    const block = blockedDates.find((b) => b.id === unblockId) ?? null;
-    setUnblockId(null);
+    const block = blockedDates.find((b) => b.id === unblockTarget?.blockId) ?? null;
+    setUnblockTarget(null);
     setConvertBlock(block);
   }
 
@@ -299,6 +329,13 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
     setConvertBlock(null);
     toast("success", "Réservation créée à partir du blocage");
     router.refresh();
+  }
+
+  function handleSelectSubRangeClick() {
+    if (!unblockTarget) return;
+    setSelectStart(unblockTarget.key);
+    setSelectionError(null);
+    setUnblockTarget(null);
   }
 
   function handleCreateReservationClick() {
@@ -311,6 +348,43 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
   function handleCreateFromRangeSaved() {
     setCreateFromRange(null);
     toast("success", "Réservation créée");
+    router.refresh();
+  }
+
+  async function handleUnblockRange() {
+    if (!confirmBlockedRange) return;
+    setLoading(true);
+    setError(null);
+    const res = await fetch(`/api/admin/blocked-dates/${confirmBlockedRange.blockId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date_start: confirmBlockedRange.start, date_end: confirmBlockedRange.end }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json() as { error: string };
+      setError(data.error);
+      return;
+    }
+    setConfirmBlockedRange(null);
+    toast("success", "Sous-plage débloquée");
+    router.refresh();
+  }
+
+  function handleCreateReservationFromBlockRange() {
+    if (!confirmBlockedRange) return;
+    setConvertBlockRange({
+      blockId: confirmBlockedRange.blockId,
+      check_in: confirmBlockedRange.start,
+      check_out: confirmBlockedRange.end,
+    });
+    setConfirmBlockedRange(null);
+    setError(null);
+  }
+
+  function handleConvertBlockRangeSaved() {
+    setConvertBlockRange(null);
+    toast("success", "Réservation créée à partir du blocage");
     router.refresh();
   }
 
@@ -332,7 +406,9 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
           <h2 className="font-semibold text-gray-800 text-base">Calendrier</h2>
           {selectStart && (
             <p className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">
-              Arrivée : {selectStart} — cliquez sur le départ
+              {dayMap.get(selectStart)?.kind === "blocked"
+                ? `Début de sous-plage : ${selectStart} — cliquez sur la fin`
+                : `Arrivée : ${selectStart} — cliquez sur le départ`}
             </p>
           )}
           {selectionError && (
@@ -462,11 +538,11 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
         onConfirm={handleBlock}
         onCancel={() => { setConfirmRange(null); setError(null); }}
       >
-        {error && <p className="text-xs text-red-600 mb-1">{error}</p>}
+        {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
         <button
           type="button"
           onClick={handleCreateReservationClick}
-          className="text-xs text-terracotta-600 hover:text-terracotta-700 font-medium underline mb-1"
+          className="w-full py-2 rounded-lg border border-terracotta-300 text-terracotta-600 text-sm font-medium hover:bg-terracotta-50 transition-colors mb-1"
         >
           Créer une réservation pour ces dates à la place
         </button>
@@ -474,21 +550,51 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
 
       {/* Modale confirmation déblocage */}
       <ConfirmModal
-        open={unblockId !== null}
+        open={unblockTarget !== null}
         title="Que faire de ce blocage ?"
         description="La date était bloquée manuellement (fermeture de la villa, réservation hors-site...)."
         confirmLabel="Débloquer"
         variant="danger"
         loading={loading}
         onConfirm={handleUnblock}
-        onCancel={() => setUnblockId(null)}
+        onCancel={() => setUnblockTarget(null)}
       >
+        <div className="space-y-2 mb-2">
+          <button
+            type="button"
+            onClick={handleConvertClick}
+            className="w-full py-2 rounded-lg border border-terracotta-300 text-terracotta-600 text-sm font-medium hover:bg-terracotta-50 transition-colors"
+          >
+            C&apos;est en fait une réservation → la convertir
+          </button>
+          <button
+            type="button"
+            onClick={handleSelectSubRangeClick}
+            className="w-full py-2 rounded-lg border border-terracotta-300 text-terracotta-600 text-sm font-medium hover:bg-terracotta-50 transition-colors"
+          >
+            Sélectionner une sous-plage précise
+          </button>
+        </div>
+      </ConfirmModal>
+
+      {/* Modale confirmation déblocage/conversion d'une sous-plage bloquée */}
+      <ConfirmModal
+        open={confirmBlockedRange !== null}
+        title="Que faire de cette sous-plage ?"
+        description={confirmBlockedRange ? `Du ${confirmBlockedRange.start} au ${confirmBlockedRange.end} (exclusif) — le reste du blocage reste inchangé.` : ""}
+        confirmLabel="Débloquer cette sous-plage"
+        variant="danger"
+        loading={loading}
+        onConfirm={handleUnblockRange}
+        onCancel={() => { setConfirmBlockedRange(null); setError(null); }}
+      >
+        {error && <p className="text-xs text-red-600 mb-2">{error}</p>}
         <button
           type="button"
-          onClick={handleConvertClick}
-          className="text-xs text-terracotta-600 hover:text-terracotta-700 font-medium underline mb-1"
+          onClick={handleCreateReservationFromBlockRange}
+          className="w-full py-2 rounded-lg border border-terracotta-300 text-terracotta-600 text-sm font-medium hover:bg-terracotta-50 transition-colors mb-1"
         >
-          C&apos;est en fait une réservation → la convertir pour un meilleur suivi
+          Créer une réservation pour cette sous-plage à la place
         </button>
       </ConfirmModal>
 
@@ -516,6 +622,20 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
           initialDates={createFromRange}
           onClose={() => setCreateFromRange(null)}
           onSaved={handleCreateFromRangeSaved}
+        />
+      )}
+
+      {/* Modale de création de réservation depuis une sous-plage bloquée */}
+      {convertBlockRange && (
+        <ReservationFormModal
+          mode="create"
+          seasons={seasons}
+          cleaningFee={cleaningFee}
+          blockedDates={expandedBlockedDates}
+          initialDates={{ check_in: convertBlockRange.check_in, check_out: convertBlockRange.check_out }}
+          convertBlockedDateId={convertBlockRange.blockId}
+          onClose={() => setConvertBlockRange(null)}
+          onSaved={handleConvertBlockRangeSaved}
         />
       )}
     </div>

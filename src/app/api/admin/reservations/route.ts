@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { createReservation, isRangeBlocked, splitBlockedDateAfterConversion } from "@/lib/supabase/queries";
+import { createReservation, isRangeBlocked, splitBlockedDate } from "@/lib/supabase/queries";
 
 // Création manuelle d'une réservation depuis l'admin — ex: demande reçue par téléphone.
 const bodySchema = z.object({
@@ -84,7 +84,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   // réservation (la portion convertie est déjà bloquée par createReservation).
   // Permet de convertir un même blocage en plusieurs réservations, une par une.
   if (convertBlockedDateId) {
-    const { error: splitError } = await splitBlockedDateAfterConversion(convertBlockedDateId, check_in, check_out);
+    const { error: splitError } = await splitBlockedDate(convertBlockedDateId, check_in, check_out);
 
     if (splitError) {
       console.error("[POST /api/admin/reservations] Échec de la division du blocage converti:", splitError);
