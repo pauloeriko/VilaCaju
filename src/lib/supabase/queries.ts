@@ -26,7 +26,8 @@ export async function getSettings(): Promise<SupabaseResponse<Settings>> {
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[getSettings]', error.message)
+    return { data: null, error: 'Impossible de charger les paramètres.' }
   }
 
   return { data, error: null }
@@ -46,7 +47,8 @@ export async function updateSettings(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[updateSettings]', error.message)
+    return { data: null, error: 'Impossible de mettre à jour les paramètres.' }
   }
 
   return { data, error: null }
@@ -64,7 +66,8 @@ export async function getBlockedDates(): Promise<SupabaseResponse<BlockedDate[]>
     .order('date_start', { ascending: true })
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[getBlockedDates]', error.message)
+    return { data: null, error: 'Impossible de charger les dates bloquées.' }
   }
 
   return { data, error: null }
@@ -88,7 +91,8 @@ export async function splitBlockedDateAfterConversion(
     .single()
 
   if (fetchError) {
-    return { data: null, error: fetchError.message }
+    console.error('[splitBlockedDateAfterConversion]', fetchError.message)
+    return { data: null, error: 'Impossible de récupérer le blocage à diviser.' }
   }
 
   const remainders: { date_start: string; date_end: string }[] = []
@@ -105,7 +109,8 @@ export async function splitBlockedDateAfterConversion(
     .eq('id', blockedDateId)
 
   if (deleteError) {
-    return { data: null, error: deleteError.message }
+    console.error('[splitBlockedDateAfterConversion]', deleteError.message)
+    return { data: null, error: "Impossible de supprimer l'ancien blocage." }
   }
 
   if (remainders.length > 0) {
@@ -119,7 +124,8 @@ export async function splitBlockedDateAfterConversion(
       })))
 
     if (insertError) {
-      return { data: null, error: insertError.message }
+      console.error('[splitBlockedDateAfterConversion]', insertError.message)
+      return { data: null, error: 'Impossible de créer le reliquat de blocage.' }
     }
   }
 
@@ -140,7 +146,8 @@ export async function getAllSeasons(): Promise<SupabaseResponse<Season[]>> {
     .order('start_day', { ascending: true })
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[getAllSeasons]', error.message)
+    return { data: null, error: 'Impossible de charger les saisons.' }
   }
 
   return { data, error: null }
@@ -159,7 +166,8 @@ export async function createSeason(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[createSeason]', error.message)
+    return { data: null, error: 'Impossible de créer la saison.' }
   }
 
   return { data: season, error: null }
@@ -180,7 +188,8 @@ export async function updateSeason(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[updateSeason]', error.message)
+    return { data: null, error: 'Impossible de mettre à jour la saison.' }
   }
 
   return { data: season, error: null }
@@ -198,7 +207,8 @@ export async function deleteSeason(
     .eq('id', id)
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[deleteSeason]', error.message)
+    return { data: null, error: 'Impossible de supprimer la saison.' }
   }
 
   return { data: null, error: null }
@@ -220,7 +230,8 @@ export async function updateSeasonsByName(
     .select()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[updateSeasonsByName]', error.message)
+    return { data: null, error: 'Impossible de mettre à jour le tarif de la saison.' }
   }
 
   return { data, error: null }
@@ -247,7 +258,8 @@ export async function isRangeBlocked(
     .gt('date_end', dateStart)
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[isRangeBlocked]', error.message)
+    return { data: null, error: 'Impossible de vérifier la disponibilité des dates.' }
   }
 
   const overlapping = (data ?? []).filter((b) =>
@@ -275,7 +287,8 @@ export async function createReservation(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[createReservation]', error.message)
+    return { data: null, error: 'Impossible de créer la réservation.' }
   }
 
   // Pose un blocage lié à cette réservation pour empêcher qu'un autre visiteur
@@ -306,7 +319,8 @@ export async function getReservations(): Promise<SupabaseResponse<Reservation[]>
     .order('check_in', { ascending: true })
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[getReservations]', error.message)
+    return { data: null, error: 'Impossible de charger les réservations.' }
   }
 
   return { data, error: null }
@@ -327,7 +341,8 @@ export async function updateReservationStatus(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[updateReservationStatus]', error.message)
+    return { data: null, error: 'Impossible de confirmer la réservation.' }
   }
 
   return { data, error: null }
@@ -353,7 +368,8 @@ export async function deleteReservation(id: string): Promise<SupabaseResponse<nu
     .eq('id', id)
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[deleteReservation]', error.message)
+    return { data: null, error: 'Impossible de supprimer la réservation.' }
   }
 
   return { data: null, error: null }
@@ -389,7 +405,8 @@ export async function updateReservationDetails(
     .single()
 
   if (error) {
-    return { data: null, error: error.message }
+    console.error('[updateReservationDetails]', error.message)
+    return { data: null, error: 'Impossible de mettre à jour la réservation.' }
   }
 
   if ((updates.check_in || updates.check_out) && data.status !== 'cancelled') {

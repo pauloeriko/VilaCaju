@@ -40,7 +40,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[POST /api/admin/blocked-dates]", error.message);
+    return NextResponse.json({ error: "Impossible de créer la date bloquée." }, { status: 500 });
   }
 
   return NextResponse.json({ data }, { status: 201 });

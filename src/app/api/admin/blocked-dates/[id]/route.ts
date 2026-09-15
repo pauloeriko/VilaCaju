@@ -22,7 +22,8 @@ export async function DELETE(
     .eq("source", "manual"); // sécurité : on ne supprime que les dates manuelles
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[DELETE /api/admin/blocked-dates/[id]]", error.message);
+    return NextResponse.json({ error: "Impossible de supprimer la date bloquée." }, { status: 500 });
   }
 
   return new NextResponse(null, { status: 204 });
