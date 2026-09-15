@@ -13,6 +13,7 @@ Coche au fur et à mesure : `- [ ]` → `- [x]`.
 Pas besoin de Claude Code — fais-le directement dans l'admin (icône poubelle). Vérifie aussi qu'il n'y a pas d'autres entrées de test qui traînent (blocages, saisons) avant de considérer les données propres pour la remise.
 
 ### 2. Diagnostiquer le risque de chevauchement de saisons
+- [x] Fait (commit 55b7ea2).
 Repéré sur capture : "Basse" (1 Jui→30 Jui) et "Moyenne" (1 Jui→31 Aoû) semblent se chevaucher — à vérifier une fois le point 3 (ambiguïté Juin/Juillet) éclairci. Si c'est un vrai chevauchement, le site public affiche potentiellement un tarif faux **dès maintenant**, indépendamment de l'admin. Prioritaire.
 
 ```
@@ -38,6 +39,7 @@ Ne corrige rien, donne-moi juste le diagnostic complet.
 → Selon le résultat : si chevauchement réel confirmé, décider ensemble s'il faut juste corriger les dates existantes (pas de code) ou aussi ajouter une validation serveur anti-chevauchement (code, prompt à écrire une fois le diagnostic connu).
 
 ### 3. Réinitialisation de mot de passe self-service
+- [x] Fait (commit 512f73b).
 Le point le plus important de tout l'audit — sans ça, ton père est bloqué en permanence s'il oublie son mot de passe.
 
 ```
@@ -73,6 +75,7 @@ Montre-moi le plan de fichiers créés/modifiés avant d'écrire le code.
 ## P1 — important, à faire après le P0
 
 ### 5. Saisie des prix en EUR (conversion, stockage reste BRL)
+- [x] Fait (commit 8ad0e04).
 ```
 Sur la page Saisons & Tarifs (SeasonManager.tsx et le formulaire
 d'édition associé) : le champ de prix (création et édition d'une
@@ -113,6 +116,7 @@ Ne touche pas aux autres flux de confirmation, déjà corrects.
 ```
 
 ### 7. Messages d'erreur compréhensibles (pas de Postgres brut)
+- [x] Fait (commit 202f4e6).
 ```
 Plusieurs fonctions dans src/lib/supabase/queries.ts (dont
 getSettings, et d'autres à identifier par une recherche de
@@ -131,6 +135,7 @@ Montre-moi la liste des endroits touchés avant de committer.
 ```
 
 ### 8. Corriger l'ambiguïté "Jui" (Juin/Juillet)
+- [x] Fait (commit e9c9962).
 ```
 Dans l'affichage des périodes de saisons, les mois sont abrégés à 3
 lettres de façon ambiguë en français : "Jui" peut désigner Juin ou
@@ -146,6 +151,7 @@ langues.
 ```
 
 ### 9. Créer une réservation depuis des dates libres
+- [x] Fait (commit ba570ec).
 ```
 Sur le calendrier admin, quand on sélectionne une plage de dates
 LIBRES, la seule action proposée est "Bloquer ces dates".
@@ -160,6 +166,7 @@ Ne touche pas au comportement actuel de blocage.
 ```
 
 ### 10. Sous-plage précise à l'intérieur d'un blocage existant
+- [x] Fait (commit 339ed9f).
 ```
 Aujourd'hui, cliquer sur une date bloquée ouvre une modale à deux
 choix appliqués à TOUTE la plage bloquée d'un coup : "Débloquer"
@@ -193,8 +200,9 @@ avant d'écrire le code.
 ```
 → À faire en dernier des items P1 : le plus gros morceau, et il s'appuie sur la logique de split déjà en place — autant avoir tout le reste réglé et committé avant.
 
-### 11. Décision à prendre : statut "déclinée" vs suppression définitive
-Pas de prompt pour l'instant — à trancher d'abord : si ton père reçoit une demande qu'il ne veut pas honorer, veux-tu qu'il puisse la marquer "déclinée" (gardée en base, hors calendrier actif, email/téléphone du client conservés) plutôt que la supprimer définitivement (aucune trace) ? Une fois décidé, on écrit le prompt correspondant.
+### 11. Statut "déclinée" pour refuser une réservation sans la supprimer
+- [x] Fait (commits 9a2cf71, 7bc9130).
+Décision finale : un statut "declined" séparé de "cancelled" (pas de fusion des deux) — la réservation est gardée en base, sortie du calendrier actif, email/téléphone du client conservés, plutôt que supprimée définitivement.
 
 ### 12. Documenter le choix "un seul rôle admin"
 Pas de code — juste noter quelque part (README ou commentaire) que c'est un choix assumé, pas un oubli, tant qu'un seul utilisateur (ton père) est prévu.
