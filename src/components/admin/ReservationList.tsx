@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Trash2, ChevronDown, ChevronUp, Pencil, CalendarX } from "lucide-react";
+import { Check, X, Trash2, ChevronDown, ChevronUp, Pencil, CalendarX } from "lucide-react";
 import type { Reservation, ReservationStatus, Season } from "@/lib/supabase/types";
 import ConfirmModal from "./ConfirmModal";
 import ReservationFormModal from "./ReservationFormModal";
@@ -23,18 +23,20 @@ function formatBRL(amount: number): string {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount);
 }
 
-const STATUS_ORDER: Extract<ReservationStatus, "pending" | "confirmed">[] = ["pending", "confirmed"];
+const STATUS_ORDER: Extract<ReservationStatus, "pending" | "confirmed" | "declined">[] = ["pending", "confirmed", "declined"];
 
 const STATUS_LABELS: Record<ReservationStatus, string> = {
   pending:   "En attente",
   confirmed: "Confirmées",
   cancelled: "Annulées",
+  declined:  "Déclinées",
 };
 
 const STATUS_BADGE: Record<ReservationStatus, string> = {
   pending:   "bg-amber-100 text-amber-700",
   confirmed: "bg-green-100 text-green-700",
   cancelled: "bg-gray-100 text-gray-500",
+  declined:  "bg-rose-100 text-rose-600",
 };
 
 // ─── Carte réservation ────────────────────────────────────────────────────────
@@ -42,12 +44,13 @@ const STATUS_BADGE: Record<ReservationStatus, string> = {
 interface ReservationCardProps {
   reservation: Reservation;
   onConfirm: (reservation: Reservation) => void;
+  onDecline: (reservation: Reservation) => void;
   onDelete: (reservation: Reservation) => void;
   onEdit: (reservation: Reservation) => void;
   actionLoading: string | null;
 }
 
-function ReservationCard({ reservation: r, onConfirm, onDelete, onEdit, actionLoading }: ReservationCardProps) {
+function ReservationCard({ reservation: r, onConfirm, onDecline, onDelete, onEdit, actionLoading }: ReservationCardProps) {
   const [expanded, setExpanded] = useState(false);
   const isLoading = actionLoading === r.id;
 
@@ -80,6 +83,16 @@ function ReservationCard({ reservation: r, onConfirm, onDelete, onEdit, actionLo
               className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 hover:bg-green-100 text-green-600 disabled:opacity-40 transition-colors"
             >
               <Check className="w-4 h-4" />
+            </button>
+          )}
+          {r.status === "pending" && (
+            <button
+              onClick={() => onDecline(r)}
+              disabled={isLoading}
+              title="Décliner"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 disabled:opacity-40 transition-colors"
+            >
+              <X className="w-4 h-4" />
             </button>
           )}
           <button
@@ -159,14 +172,18 @@ export default function ReservationList({ reservations, seasons, cleaningFee, bl
   const [actionError,   setActionError]   = useState<string | null>(null);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
 
-  // Modale de confirmation (confirmer ou supprimer)
+  // Modale de confirmation (confirmer, décliner ou supprimer)
   const [modalAction, setModalAction] = useState<{
     reservation: Reservation;
-    kind: "confirm" | "delete";
+    kind: "confirm" | "decline" | "delete";
   } | null>(null);
 
   function requestConfirm(reservation: Reservation) {
     setModalAction({ reservation, kind: "confirm" });
+  }
+
+  function requestDecline(reservation: Reservation) {
+    setModalAction({ reservation, kind: "decline" });
   }
 
   function requestDelete(reservation: Reservation) {
@@ -182,9 +199,13 @@ export default function ReservationList({ reservations, seasons, cleaningFee, bl
     setModalAction(null);
 
     const res = await fetch(`/api/admin/reservations/${reservation.id}`, {
-      method: kind === "confirm" ? "PATCH" : "DELETE",
-      headers: kind === "confirm" ? { "Content-Type": "application/json" } : undefined,
-      body: kind === "confirm" ? JSON.stringify({ status: "confirmed" }) : undefined,
+      method: kind === "delete" ? "DELETE" : "PATCH",
+      headers: kind === "delete" ? undefined : { "Content-Type": "application/json" },
+      body: kind === "confirm"
+        ? JSON.stringify({ status: "confirmed" })
+        : kind === "decline"
+          ? JSON.stringify({ status: "declined" })
+          : undefined,
     });
 
     setActionLoading(null);
@@ -197,12 +218,12 @@ export default function ReservationList({ reservations, seasons, cleaningFee, bl
       return;
     }
 
-    toast(
-      "success",
-      kind === "confirm"
-        ? `Réservation de ${reservation.guest_name} confirmée`
-        : `Réservation de ${reservation.guest_name} supprimée`,
-    );
+    const successMessages: Record<typeof kind, string> = {
+      confirm: `Réservation de ${reservation.guest_name} confirmée`,
+      decline: `Réservation de ${reservation.guest_name} déclinée`,
+      delete:  `Réservation de ${reservation.guest_name} supprimée`,
+    };
+    toast("success", successMessages[kind]);
     router.refresh();
   }
 
@@ -245,6 +266,7 @@ export default function ReservationList({ reservations, seasons, cleaningFee, bl
                     key={r.id}
                     reservation={r}
                     onConfirm={requestConfirm}
+                    onDecline={requestDecline}
                     onDelete={requestDelete}
                     onEdit={setEditingReservation}
                     actionLoading={actionLoading}
@@ -270,14 +292,28 @@ export default function ReservationList({ reservations, seasons, cleaningFee, bl
         title={
           modalAction?.kind === "confirm"
             ? "Confirmer cette réservation ?"
-            : "Supprimer cette réservation ?"
+            : modalAction?.kind === "decline"
+              ? "Décliner cette demande ?"
+              : "Supprimer cette réservation ?"
         }
         description={
           modalAction
-            ? `${modalAction.reservation.guest_name} · ${formatDate(modalAction.reservation.check_in)} → ${formatDate(modalAction.reservation.check_out)} · ${formatBRL(modalAction.reservation.total_price)}${modalAction.kind === "delete" ? " — définitif, non récupérable." : ""}`
+            ? `${modalAction.reservation.guest_name} · ${formatDate(modalAction.reservation.check_in)} → ${formatDate(modalAction.reservation.check_out)} · ${formatBRL(modalAction.reservation.total_price)}${
+                modalAction.kind === "delete"
+                  ? " — définitif, non récupérable."
+                  : modalAction.kind === "decline"
+                    ? " — les dates redeviennent disponibles, la demande reste consultable dans \"Déclinées\"."
+                    : ""
+              }`
             : ""
         }
-        confirmLabel={modalAction?.kind === "confirm" ? "Confirmer" : "Supprimer"}
+        confirmLabel={
+          modalAction?.kind === "confirm"
+            ? "Confirmer"
+            : modalAction?.kind === "decline"
+              ? "Décliner"
+              : "Supprimer"
+        }
         variant={modalAction?.kind === "delete" ? "danger" : "default"}
         loading={actionLoading !== null}
         onConfirm={executeAction}

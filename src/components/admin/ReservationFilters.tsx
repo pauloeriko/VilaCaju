@@ -18,6 +18,7 @@ const STATUS_OPTIONS: { value: ReservationStatus | "all"; label: string }[] = [
   { value: "pending",   label: "En attente" },
   { value: "confirmed", label: "Confirmées" },
   { value: "cancelled", label: "Annulées" },
+  { value: "declined",  label: "Déclinées" },
 ];
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [

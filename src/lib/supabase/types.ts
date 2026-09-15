@@ -1,6 +1,6 @@
 // Types TypeScript pour les 3 tables Supabase de Vila Caju
 
-export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled'
+export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled' | 'declined'
 
 export type Reservation = {
   id: string

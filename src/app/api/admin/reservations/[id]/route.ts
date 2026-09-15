@@ -9,7 +9,7 @@ import {
 } from "@/lib/supabase/queries";
 
 const patchSchema = z.object({
-  status: z.literal("confirmed"),
+  status: z.enum(["confirmed", "declined"]),
 });
 
 export async function PATCH(

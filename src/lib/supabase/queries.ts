@@ -327,12 +327,26 @@ export async function getReservations(): Promise<SupabaseResponse<Reservation[]>
   return { data, error: null }
 }
 
-// Admin uniquement — confirmer une réservation en attente
+// Admin uniquement — confirmer une réservation en attente, ou la décliner.
+// Décliner libère les dates bloquées automatiquement posées à sa création
+// (comme deleteReservation) mais conserve la réservation, contrairement à la
+// suppression définitive : les coordonnées du client restent consultables.
 export async function updateReservationStatus(
   id: string,
-  status: Extract<ReservationStatus, 'confirmed'>,
+  status: Extract<ReservationStatus, 'confirmed' | 'declined'>,
 ): Promise<SupabaseResponse<Reservation>> {
   const supabase = await createAdminClient()
+
+  if (status === 'declined') {
+    const { error: unblockError } = await supabase
+      .from('blocked_dates')
+      .delete()
+      .eq('reservation_id', id)
+
+    if (unblockError) {
+      console.error('[updateReservationStatus] Échec de la libération des dates:', unblockError.message)
+    }
+  }
 
   const { data, error } = await supabase
     .from('reservations')
@@ -343,7 +357,12 @@ export async function updateReservationStatus(
 
   if (error) {
     console.error('[updateReservationStatus]', error.message)
-    return { data: null, error: 'Impossible de confirmer la réservation.' }
+    return {
+      data: null,
+      error: status === 'confirmed'
+        ? 'Impossible de confirmer la réservation.'
+        : 'Impossible de décliner la réservation.',
+    }
   }
 
   return { data, error: null }
@@ -410,7 +429,7 @@ export async function updateReservationDetails(
     return { data: null, error: 'Impossible de mettre à jour la réservation.' }
   }
 
-  if ((updates.check_in || updates.check_out) && data.status !== 'cancelled') {
+  if ((updates.check_in || updates.check_out) && data.status !== 'cancelled' && data.status !== 'declined') {
     const { error: syncError } = await supabase
       .from('blocked_dates')
       .update({ date_start: data.check_in, date_end: data.check_out })

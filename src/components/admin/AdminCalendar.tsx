@@ -202,7 +202,7 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
     const map = new Map<string, DayState>();
 
     for (const r of reservations) {
-      if (r.status === "cancelled") continue;
+      if (r.status === "cancelled" || r.status === "declined") continue;
       const keys = expandRange(r.check_in, r.check_out);
       for (let i = 0; i < keys.length; i++) {
         map.set(keys[i], {
