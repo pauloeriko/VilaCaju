@@ -3,10 +3,11 @@
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, X, Check, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, brlToEur, eurToBrl } from "@/lib/utils";
 import type { Season, SeasonName } from "@/lib/supabase/types";
 import EmptyState from "./EmptyState";
 import CurrencyDisplay from "@/components/ui/CurrencyDisplay";
+import { useCurrency } from "@/lib/currency/CurrencyContext";
 import { useToast } from "./ToastProvider";
 
 // ─── Labels & couleurs ───────────────────────────────────────────────────────
@@ -124,6 +125,7 @@ interface SeasonGroupProps {
 
 function SeasonGroup({ name, periods, onRefresh }: SeasonGroupProps) {
   const { toast } = useToast();
+  const { currency, eurRate } = useCurrency();
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceDraft, setPriceDraft] = useState(String(periods[0].price_per_night));
   const [minNightsDraft, setMinNightsDraft] = useState(String(periods[0].min_nights));
@@ -136,12 +138,13 @@ function SeasonGroup({ name, periods, onRefresh }: SeasonGroupProps) {
   async function savePrice() {
     setLoading(true);
     setError(null);
+    const priceBRL = currency === "EUR" ? eurToBrl(Number(priceDraft), eurRate) : Number(priceDraft);
     const res = await fetch("/api/admin/seasons", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
-        price_per_night: Number(priceDraft),
+        price_per_night: priceBRL,
         min_nights: Number(minNightsDraft),
       }),
     });
@@ -224,11 +227,11 @@ function SeasonGroup({ name, periods, onRefresh }: SeasonGroupProps) {
         {editingPrice ? (
           <div className="flex items-center gap-2">
             <input
-              type="number" min={0} step={50} value={priceDraft}
+              type="number" min={0} step={currency === "EUR" ? 10 : 50} value={priceDraft}
               onChange={(e) => setPriceDraft(e.target.value)}
               className="w-24 px-2 py-1 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-2 focus:ring-terracotta-400/50"
             />
-            <span className="text-xs text-gray-400">/ nuit · min</span>
+            <span className="text-xs text-gray-400">{currency} / nuit · min</span>
             <input
               type="number" min={1} value={minNightsDraft}
               onChange={(e) => setMinNightsDraft(e.target.value)}
@@ -245,7 +248,10 @@ function SeasonGroup({ name, periods, onRefresh }: SeasonGroupProps) {
         ) : (
           <button
             onClick={() => {
-              setPriceDraft(String(periods[0].price_per_night));
+              const displayPrice = currency === "EUR"
+                ? brlToEur(periods[0].price_per_night, eurRate)
+                : periods[0].price_per_night;
+              setPriceDraft(String(displayPrice));
               setMinNightsDraft(String(periods[0].min_nights));
               setEditingPrice(true);
             }}
@@ -353,6 +359,7 @@ interface SeasonManagerProps {
 export default function SeasonManager({ seasons }: SeasonManagerProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { currency, eurRate } = useCurrency();
   const [showNewForm, setShowNewForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -369,9 +376,11 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
 
   const availableNames = SEASON_ORDER.filter((n) => !grouped.has(n));
 
+  const DEFAULT_PRICE_BRL = 5000;
+
   const [newForm, setNewForm] = useState<NewSeasonFormData>({
     name: availableNames[0] ?? "mid",
-    price_per_night: 5000,
+    price_per_night: DEFAULT_PRICE_BRL,
     min_nights: 3,
     start_month: 1,
     start_day: 1,
@@ -380,9 +389,10 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
   });
 
   function openNewForm() {
+    const defaultPrice = currency === "EUR" ? brlToEur(DEFAULT_PRICE_BRL, eurRate) : DEFAULT_PRICE_BRL;
     setNewForm({
       name: availableNames[0] ?? "mid",
-      price_per_night: 5000,
+      price_per_night: defaultPrice,
       min_nights: 3,
       start_month: 1,
       start_day: 1,
@@ -402,10 +412,11 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
     setLoading(true);
     setError(null);
 
+    const priceBRL = currency === "EUR" ? eurToBrl(newForm.price_per_night, eurRate) : newForm.price_per_night;
     const res = await fetch("/api/admin/seasons", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newForm),
+      body: JSON.stringify({ ...newForm, price_per_night: priceBRL }),
     });
 
     setLoading(false);
@@ -501,9 +512,9 @@ export default function SeasonManager({ seasons }: SeasonManagerProps) {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1.5">Prix / nuit (BRL)</label>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">Prix / nuit ({currency})</label>
                 <input
-                  type="number" min={0} step={100} value={newForm.price_per_night}
+                  type="number" min={0} step={currency === "EUR" ? 10 : 100} value={newForm.price_per_night}
                   onChange={(e) => setNewForm({ ...newForm, price_per_night: Number(e.target.value) })}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-terracotta-400/50"
                 />

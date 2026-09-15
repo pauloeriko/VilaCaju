@@ -26,6 +26,10 @@ export function brlToEur(brl: number, eurRate: number): number {
   return Math.round(brl / eurRate);
 }
 
+export function eurToBrl(eur: number, eurRate: number): number {
+  return Math.round(eur * eurRate);
+}
+
 export const WHATSAPP_NUMBER = "33759568241";
 
 export function buildWhatsAppUrl(message: string): string {
