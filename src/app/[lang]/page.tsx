@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { type Locale, locales } from "@/lib/i18n/config";
+import { getBlockedDates } from "@/lib/supabase/queries";
+import { expandBlockedRanges } from "@/lib/supabase/utils";
 import HeroSection from "@/components/landing/HeroSection";
 import GallerySection from "@/components/landing/GallerySection";
 import ReviewsSection from "@/components/landing/ReviewsSection";
@@ -34,11 +36,15 @@ export default async function HomePage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const dict = await getDictionary(lang as Locale);
+  const [dict, blockedResult] = await Promise.all([
+    getDictionary(lang as Locale),
+    getBlockedDates(),
+  ]);
+  const blockedDates = expandBlockedRanges(blockedResult.data ?? []);
 
   return (
     <>
-      <HeroSection dict={dict.hero} lang={lang as Locale} />
+      <HeroSection dict={dict.hero} lang={lang as Locale} blockedDates={blockedDates} />
       <GallerySection dict={dict.gallery} lang={lang as Locale} />
       <PricingSection lang={lang as Locale} dict={{ pricing: dict.pricing, rates: dict.rates }} />
       <ReviewsSection dict={dict.reviews} lang={lang as Locale} />

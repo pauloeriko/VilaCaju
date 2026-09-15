@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { type Locale, locales } from "@/lib/i18n/config";
+import { getBlockedDates, getAllSeasons, getSettings } from "@/lib/supabase/queries";
+import { expandBlockedRanges } from "@/lib/supabase/utils";
 import SectionWrapper from "@/components/ui/SectionWrapper";
 import Button from "@/components/ui/Button";
 import PriceCard from "@/components/pricing/PriceCard";
@@ -34,7 +36,17 @@ export default async function RatesPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const dict = await getDictionary(lang as Locale);
+
+  const [dict, blockedResult, seasonsResult, settingsResult] = await Promise.all([
+    getDictionary(lang as Locale),
+    getBlockedDates(),
+    getAllSeasons(),
+    getSettings(),
+  ]);
+
+  const blockedDates = expandBlockedRanges(blockedResult.data ?? []);
+  const seasons = seasonsResult.data ?? [];
+  const cleaningFee = settingsResult.data?.cleaning_fee ?? 0;
 
   // ── Cartes de prix ────────────────────────────────────────────────────
   const priceCards = (
@@ -175,6 +187,9 @@ export default async function RatesPage({
       <TarifsCalendarSync
         lang={lang as Locale}
         dict={dict.rates}
+        blockedDates={blockedDates}
+        seasons={seasons}
+        cleaningFee={cleaningFee}
         priceCards={priceCards}
         paymentSection={paymentSection}
         cancellationSection={cancellationSection}

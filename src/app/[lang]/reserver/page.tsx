@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { type Locale, locales } from "@/lib/i18n/config";
+import { getBlockedDates, getAllSeasons, getSettings } from "@/lib/supabase/queries";
+import { expandBlockedRanges } from "@/lib/supabase/utils";
 import BookingForm from "@/components/booking/BookingForm";
 
 export function generateStaticParams() {
@@ -33,7 +35,17 @@ export default async function BookingPage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const dict = await getDictionary(lang as Locale);
+
+  const [dict, blockedResult, seasonsResult, settingsResult] = await Promise.all([
+    getDictionary(lang as Locale),
+    getBlockedDates(),
+    getAllSeasons(),
+    getSettings(),
+  ]);
+
+  const blockedDates = expandBlockedRanges(blockedResult.data ?? []);
+  const cleaningFee = settingsResult.data?.cleaning_fee ?? 0;
+  const seasons = seasonsResult.data ?? [];
 
   return (
     <div className="max-w-7xl mx-auto px-6 md:px-8 py-12 md:py-20">
@@ -44,7 +56,13 @@ export default async function BookingPage({
       </div>
 
       <Suspense fallback={<div className="h-96 animate-pulse bg-sand-100 rounded-softer" />}>
-        <BookingForm lang={lang as Locale} dict={dict.booking} />
+        <BookingForm
+          lang={lang as Locale}
+          dict={dict.booking}
+          blockedDates={blockedDates}
+          seasons={seasons}
+          cleaningFee={cleaningFee}
+        />
       </Suspense>
     </div>
   );
