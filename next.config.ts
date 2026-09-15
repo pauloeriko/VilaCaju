@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
-  // Racine explicite du projet : évite que Next.js infère la mauvaise racine
-  // quand un package-lock.json existe plus haut dans l'arborescence (ex: ~/package-lock.json)
-  outputFileTracingRoot: path.join(__dirname),
-
   images: {
     remotePatterns: [
       {

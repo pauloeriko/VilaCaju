@@ -6,14 +6,10 @@ import PriceCalculator from "./PriceCalculator";
 import SeasonCalendar from "./SeasonCalendar";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
-import type { Season } from "@/lib/supabase/types";
 
 interface TarifsCalendarSyncProps {
   lang: Locale;
   dict: Dictionary["rates"];
-  blockedDates: string[];
-  seasons: Season[];
-  cleaningFee: number;
   // Contenu statique rendu entre les sections (price cards, payment, etc.)
   priceCards: React.ReactNode;
   paymentSection: React.ReactNode;
@@ -30,9 +26,6 @@ interface TarifsCalendarSyncProps {
 export default function TarifsCalendarSync({
   lang,
   dict,
-  blockedDates,
-  seasons,
-  cleaningFee,
   priceCards,
   paymentSection,
   cancellationSection,
@@ -67,20 +60,12 @@ export default function TarifsCalendarSync({
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-8 items-stretch">
             <div className="card-organic p-6 h-full">
-              <AvailabilityCalendar
-                lang={lang}
-                blockedDates={blockedDates}
-                seasons={seasons}
-                onDatesChange={handleDatesChange}
-              />
+              <AvailabilityCalendar lang={lang} onDatesChange={handleDatesChange} />
             </div>
             <div id="price-calculator" className="h-full [&>div]:h-full">
               <PriceCalculator
                 lang={lang}
                 dict={dict}
-                seasons={seasons}
-                cleaningFee={cleaningFee}
-                blockedDates={blockedDates}
                 externalCheckIn={calendarCheckIn}
                 externalCheckOut={calendarCheckOut}
               />

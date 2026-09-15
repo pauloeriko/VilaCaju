@@ -3,27 +3,12 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getSeasonForDate } from "@/lib/pricing";
+import { BOOKED_DATES, getSeasonForDay, rangeContainsUnavailable } from "@/lib/pricing/availability";
 import type { Locale } from "@/lib/i18n/config";
-import type { Season } from "@/lib/supabase/types";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function toKey(year: number, month: number, day: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
-function rangeHasBlocked(checkIn: string, checkOut: string, blocked: Set<string>): boolean {
-  const [ciY, ciM, ciD] = checkIn.split("-").map(Number);
-  const [coY, coM, coD] = checkOut.split("-").map(Number);
-  const current = new Date(ciY, ciM - 1, ciD);
-  const end     = new Date(coY, coM - 1, coD);
-
-  while (current < end) {
-    const key = toKey(current.getFullYear(), current.getMonth() + 1, current.getDate());
-    if (blocked.has(key)) return true;
-    current.setDate(current.getDate() + 1);
-  }
-  return false;
 }
 
 // ─── Localisation ─────────────────────────────────────────────────────────────
@@ -79,15 +64,12 @@ interface MonthGridProps {
   checkOut: string | null;
   hoverDate: string | null;
   hoverRangeIsInvalid: boolean;
-  blockedDatesSet: Set<string>;
-  seasons: Season[];
   onDayClick: (key: string) => void;
   onDayHover: (key: string | null) => void;
 }
 
 function MonthGrid({
-  year, month, lang, checkIn, checkOut, hoverDate, hoverRangeIsInvalid,
-  blockedDatesSet, seasons, onDayClick, onDayHover,
+  year, month, lang, checkIn, checkOut, hoverDate, hoverRangeIsInvalid, onDayClick, onDayHover,
 }: MonthGridProps) {
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
@@ -111,11 +93,9 @@ function MonthGrid({
     const dateObj = new Date(year, month - 1, d);
     dateObj.setHours(0, 0, 0, 0);
     const key = toKey(year, month, d);
-    const season = getSeasonForDate(key, seasons);
-    const isClosed = season?.name === "closed";
+    const season = getSeasonForDay(month, d);
     const isPast = dateObj < today;
-    const isBlocked = blockedDatesSet.has(key);
-    const isUnavailable = isPast || isClosed || isBlocked;
+    const isUnavailable = isPast || season === "closed" || BOOKED_DATES.has(key);
     const isCheckIn  = key === checkIn;
     const isCheckOut = key === checkOut;
     const inRange    = isInRange(key);
@@ -126,10 +106,13 @@ function MonthGrid({
     if (isCheckIn || isCheckOut) {
       state = "bg-terracotta-500 text-white font-bold cursor-pointer";
     } else if (isPast) {
+      // Passé : texte très clair, pas de fond
       state = "text-charcoal-200 cursor-not-allowed";
-    } else if (isClosed || isBlocked) {
+    } else if (season === "closed" || BOOKED_DATES.has(key)) {
+      // Non disponible (occupé ou fermeture) : même couleur gris clair
       state = "bg-[#D3D3D3] text-charcoal-400 line-through cursor-not-allowed";
     } else if (inRange) {
+      // Plage sélectionnée — rouge si invalide, terracotta si valide
       state = hoverRangeIsInvalid
         ? "bg-red-50 text-red-400 cursor-not-allowed"
         : "bg-terracotta-100 text-terracotta-800 cursor-pointer";
@@ -173,8 +156,6 @@ function MonthGrid({
 // ─── Composant principal ──────────────────────────────────────────────────────
 interface AvailabilityCalendarProps {
   lang: Locale;
-  blockedDates?: string[];   // YYYY-MM-DD — dates bloquées depuis Supabase
-  seasons?: Season[];        // Saisons Supabase — pour griser les périodes fermées
   onDatesChange?: (checkIn: string, checkOut: string) => void;
   initialCheckIn?: string | null;
   initialCheckOut?: string | null;
@@ -183,11 +164,9 @@ interface AvailabilityCalendarProps {
 const TOTAL_MONTHS = 12;
 
 export default function AvailabilityCalendar({
-  lang, blockedDates = [], seasons = [], onDatesChange, initialCheckIn, initialCheckOut,
+  lang, onDatesChange, initialCheckIn, initialCheckOut,
 }: AvailabilityCalendarProps) {
   const now = new Date();
-
-  const blockedDatesSet = useMemo(() => new Set(blockedDates), [blockedDates]);
 
   const initialOffset = (() => {
     if (!initialCheckIn) return 0;
@@ -210,32 +189,37 @@ export default function AvailabilityCalendar({
     months.push({ year: d.getFullYear(), month: d.getMonth() + 1 });
   }
 
+  // Détecte si la plage survolée est invalide (pour colorer la plage en rouge)
   const hoverRangeIsInvalid = useMemo(() => {
     if (!checkIn || checkOut || !hoverDate || hoverDate <= checkIn) return false;
-    return rangeHasBlocked(checkIn, hoverDate, blockedDatesSet);
-  }, [checkIn, checkOut, hoverDate, blockedDatesSet]);
+    return rangeContainsUnavailable(checkIn, hoverDate);
+  }, [checkIn, checkOut, hoverDate]);
 
   const handleDayClick = useCallback((key: string) => {
+    // Pas de check-in ou les deux dates déjà choisies → on recommence
     if (!checkIn || (checkIn && checkOut)) {
       setCheckIn(key);
       setCheckOut(null);
       setRangeError(false);
       return;
     }
+    // Nouvelle date ≤ check-in → on remplace le check-in
     if (key <= checkIn) {
       setCheckIn(key);
       setCheckOut(null);
       setRangeError(false);
       return;
     }
-    if (rangeHasBlocked(checkIn, key, blockedDatesSet)) {
+    // Vérification : la plage contient-elle des dates non disponibles ?
+    if (rangeContainsUnavailable(checkIn, key)) {
       setRangeError(true);
       return;
     }
+    // Plage valide
     setRangeError(false);
     setCheckOut(key);
     onDatesChange?.(checkIn, key);
-  }, [checkIn, checkOut, blockedDatesSet, onDatesChange]);
+  }, [checkIn, checkOut, onDatesChange]);
 
   const handleClear = () => {
     setCheckIn(null);
@@ -266,6 +250,7 @@ export default function AvailabilityCalendar({
         <p className="text-sm text-terracotta-500 font-medium mt-1">{labels.minStay}</p>
       </div>
 
+      {/* Message d'erreur persistant */}
       {rangeError && (
         <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3 mb-4">
           <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
@@ -273,13 +258,14 @@ export default function AvailabilityCalendar({
         </div>
       )}
 
+      {/* Instruction / dates sélectionnées */}
       <p className={cn("text-sm text-center mb-4", showError ? "text-red-500 font-medium" : "text-charcoal-500")}>
         {instruction}
       </p>
 
+      {/* Navigation mois + bouton reset */}
       <div className="flex items-center justify-between mb-5">
         <button
-          type="button"
           onClick={() => setOffset((o) => Math.max(0, o - 1))}
           disabled={offset === 0}
           aria-label="Mois précédent"
@@ -293,7 +279,6 @@ export default function AvailabilityCalendar({
 
         {(checkIn || checkOut || rangeError) && (
           <button
-            type="button"
             onClick={handleClear}
             className="text-sm text-charcoal-500 hover:text-terracotta-500 underline transition-colors"
           >
@@ -302,7 +287,6 @@ export default function AvailabilityCalendar({
         )}
 
         <button
-          type="button"
           onClick={() => setOffset((o) => Math.min(TOTAL_MONTHS - 1, o + 1))}
           disabled={offset >= TOTAL_MONTHS - 1}
           aria-label="Mois suivant"
@@ -315,6 +299,7 @@ export default function AvailabilityCalendar({
         </button>
       </div>
 
+      {/* Grille du mois */}
       <MonthGrid
         year={currentMonth.year}
         month={currentMonth.month}
@@ -323,12 +308,11 @@ export default function AvailabilityCalendar({
         checkOut={checkOut}
         hoverDate={hoverDate}
         hoverRangeIsInvalid={hoverRangeIsInvalid}
-        blockedDatesSet={blockedDatesSet}
-        seasons={seasons}
         onDayClick={handleDayClick}
         onDayHover={setHoverDate}
       />
 
+      {/* Légende — Occupé + Sélectionné uniquement */}
       <div className="mt-6 flex items-center gap-x-6 gap-y-2 text-sm text-charcoal-600 justify-center flex-wrap">
         <div className="flex items-center gap-1.5">
           <span

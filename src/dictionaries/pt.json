@@ -119,30 +119,21 @@
     "name": "Nome completo",
     "email": "Email",
     "phone": "Telefone",
-    "country": "País",
     "message": "Mensagem (opcional)",
     "estimatedPrice": "Preço estimado",
     "total": "Total",
     "summary": "Resumo",
     "submit": "Enviar via WhatsApp",
-    "loading": "Enviando…",
     "nights": "noites",
-    "cleaningFee": "Taxa de limpeza",
-    "perNight": "/ noite",
     "backHome": "Voltar ao início",
     "cancellationPolicy": "Política de cancelamento aplicável",
-    "successTitle": "Pedido enviado!",
-    "successText": "Seu pedido foi registrado. Clique abaixo para finalizar via WhatsApp.",
-    "successWhatsapp": "Abrir WhatsApp",
     "errors": {
       "required": "Este campo é obrigatório",
       "invalidEmail": "Email inválido",
       "invalidPhone": "Telefone inválido",
       "minStay": "Estadia mínima de {min} noites para este período",
       "closedPeriod": "A villa está fechada neste período",
-      "unavailableDates": "Este período contém datas já reservadas.",
-      "maxGuests": "Máximo 17 pessoas",
-      "submitError": "Ocorreu um erro. Por favor, tente novamente."
+      "maxGuests": "Máximo 17 pessoas"
     }
   },
   "contact": {

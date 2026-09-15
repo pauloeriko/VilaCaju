@@ -16,13 +16,7 @@
       "Bash(npm pack:*)",
       "Bash(curl -s https://unpkg.com/lucide-react@0.477.0/dist/esm/icons/horse.js)",
       "Bash(curl -s https://unpkg.com/lucide-react@0.577.0/dist/esm/icons/horse.js)",
-      "WebFetch(domain:www.google.fr)",
-      "Bash(npx tsc:*)",
-      "Bash(find:*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/fr/admin/login)",
-      "Bash(curl -s http://localhost:3001/fr/admin/login)",
-      "Bash(curl:*)",
-      "Bash(pkill -f \"next dev\")"
+      "WebFetch(domain:www.google.fr)"
     ]
   }
 }

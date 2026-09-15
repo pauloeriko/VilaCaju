@@ -91,20 +91,17 @@ export default function Navbar({ lang, dict }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Devise + hamburger (mobile) */}
-          <div className="md:hidden flex items-center gap-2">
-            <CurrencySwitcher scrolled={scrolled} />
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className={cn(
-                "p-2 transition-colors",
-                scrolled ? "text-charcoal-700" : "text-white"
-              )}
-              aria-label="Menu"
-            >
-              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className={cn(
+              "md:hidden p-2 transition-colors",
+              scrolled ? "text-charcoal-700" : "text-white"
+            )}
+            aria-label="Menu"
+          >
+            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
 

@@ -1,12 +1,9 @@
-"use client";
-
 import React from "react";
 import { CalendarDays } from "lucide-react";
 import type { Locale } from "@/lib/i18n/config";
 import type { SeasonType } from "@/lib/pricing/types";
 import { formatCurrency, brlToEur } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { useCurrency } from "@/lib/currency/CurrencyContext";
 
 interface PeriodItem {
   dates: string;
@@ -79,9 +76,8 @@ export default function PriceCard({
   lang,
   perNightLabel,
 }: PriceCardProps) {
-  const { eurRate } = useCurrency();
   const styles = seasonStyles[seasonType];
-  const eurAmount = brlToEur(pricePerNight, eurRate);
+  const eurAmount = brlToEur(pricePerNight);
 
   return (
     <div
