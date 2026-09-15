@@ -1,8 +1,0 @@
-{
-  "/api/admin/reservations/route": "app/api/admin/reservations/route.js",
-  "/[lang]/page": "app/[lang]/page.js",
-  "/[lang]/tarifs/page": "app/[lang]/tarifs/page.js",
-  "/[lang]/admin/page": "app/[lang]/admin/page.js",
-  "/[lang]/admin/seasons/page": "app/[lang]/admin/seasons/page.js",
-  "/[lang]/admin/settings/page": "app/[lang]/admin/settings/page.js"
-}
