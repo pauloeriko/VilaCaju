@@ -23,7 +23,7 @@ function formatBRL(amount: number): string {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount);
 }
 
-const STATUS_ORDER: Extract<ReservationStatus, "pending" | "confirmed" | "declined">[] = ["pending", "confirmed", "declined"];
+const STATUS_ORDER: Extract<ReservationStatus, "pending" | "confirmed" | "declined" | "cancelled">[] = ["pending", "confirmed", "declined", "cancelled"];
 
 const STATUS_LABELS: Record<ReservationStatus, string> = {
   pending:   "En attente",
