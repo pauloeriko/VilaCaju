@@ -163,9 +163,11 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
 
   const [offset, setOffset] = useState(0);
   const [selectStart, setSelectStart] = useState<string | null>(null);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
   const [confirmRange, setConfirmRange] = useState<{ start: string; end: string } | null>(null);
   const [unblockId, setUnblockId] = useState<string | null>(null);
   const [convertBlock, setConvertBlock] = useState<BlockedDate | null>(null);
+  const [createFromRange, setCreateFromRange] = useState<{ check_in: string; check_out: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [popover, setPopover] = useState<{ reservation: Reservation; key: string } | null>(null);
@@ -231,15 +233,24 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
 
     if (!selectStart) {
       setSelectStart(key);
+      setSelectionError(null);
     } else {
       const [start, end] = selectStart < key ? [selectStart, key] : [key, selectStart];
       const endExclusive = parseKey(end);
       endExclusive.setDate(endExclusive.getDate() + 1);
       const endStr = toKey(endExclusive.getFullYear(), endExclusive.getMonth() + 1, endExclusive.getDate());
+
+      const kindsInRange = new Set(expandRange(start, endStr).map((k) => dayMap.get(k)?.kind ?? "available"));
+      if (kindsInRange.size > 1) {
+        setSelectionError("Sélection invalide : mélange de dates avec des statuts différents.");
+        setSelectStart(null);
+        return;
+      }
+
       setConfirmRange({ start, end: endStr });
       setSelectStart(null);
     }
-  }, [selectStart]);
+  }, [selectStart, dayMap]);
 
   async function handleBlock() {
     if (!confirmRange) return;
@@ -290,6 +301,19 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
     router.refresh();
   }
 
+  function handleCreateReservationClick() {
+    if (!confirmRange) return;
+    setCreateFromRange({ check_in: confirmRange.start, check_out: confirmRange.end });
+    setConfirmRange(null);
+    setError(null);
+  }
+
+  function handleCreateFromRangeSaved() {
+    setCreateFromRange(null);
+    toast("success", "Réservation créée");
+    router.refresh();
+  }
+
   // Mois à afficher
   const months = useMemo(() => {
     const result: { year: number; month: number }[] = [];
@@ -309,6 +333,11 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
           {selectStart && (
             <p className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded">
               Arrivée : {selectStart} — cliquez sur le départ
+            </p>
+          )}
+          {selectionError && (
+            <p className="text-xs text-red-600 font-medium bg-red-50 px-2 py-1 rounded">
+              {selectionError}
             </p>
           )}
         </div>
@@ -434,6 +463,13 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
         onCancel={() => { setConfirmRange(null); setError(null); }}
       >
         {error && <p className="text-xs text-red-600 mb-1">{error}</p>}
+        <button
+          type="button"
+          onClick={handleCreateReservationClick}
+          className="text-xs text-terracotta-600 hover:text-terracotta-700 font-medium underline mb-1"
+        >
+          Créer une réservation pour ces dates à la place
+        </button>
       </ConfirmModal>
 
       {/* Modale confirmation déblocage */}
@@ -467,6 +503,19 @@ export default function AdminCalendar({ reservations, blockedDates, expandedBloc
           convertBlockedDateId={convertBlock.id}
           onClose={() => setConvertBlock(null)}
           onSaved={handleConvertSaved}
+        />
+      )}
+
+      {/* Modale de création de réservation depuis une sélection libre */}
+      {createFromRange && (
+        <ReservationFormModal
+          mode="create"
+          seasons={seasons}
+          cleaningFee={cleaningFee}
+          blockedDates={expandedBlockedDates}
+          initialDates={createFromRange}
+          onClose={() => setCreateFromRange(null)}
+          onSaved={handleCreateFromRangeSaved}
         />
       )}
     </div>
