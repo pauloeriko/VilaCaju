@@ -35,8 +35,14 @@ const MONTHS_FR = [
   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
 ];
 
+// Abréviations explicites : slice(0, 3) confondait Juin et Juillet ("Jui" pour les deux)
+const MONTHS_FR_SHORT = [
+  "Janv", "Févr", "Mars", "Avr", "Mai", "Juin",
+  "Juil", "Août", "Sept", "Oct", "Nov", "Déc",
+];
+
 function formatMonthDay(month: number, day: number): string {
-  return `${day} ${MONTHS_FR[month - 1].slice(0, 3)}`;
+  return `${day} ${MONTHS_FR_SHORT[month - 1]}`;
 }
 
 // ─── Formulaire période (mois/jour uniquement) ─────────────────────────────
