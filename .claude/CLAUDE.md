@@ -4,11 +4,15 @@
 
 **Projet :** Vila Caju — Site vitrine et réservation pour location immobilière de luxe à Pontal de Maceió, Brésil  
 **Type :** Website + API  
-**Stack :**
-- Frontend : Next.js 14 (App Router) + TypeScript + Tailwind CSS
-- Backend : FastAPI (Python) — API de réservation et gestion
-- BDD : Supabase (PostgreSQL)
-- Déploiement : Vercel (frontend) + Railway ou Render (FastAPI)
+**Stack (vérifiée dans le repo au 2026-09-15) :**
+- Frontend : Next.js 15 (App Router) + TypeScript + Tailwind CSS 4
+- Backend : pas de service séparé — la logique serveur (réservations, saisons, blocages, paramètres) vit entièrement dans les Route Handlers Next.js (`src/app/api/**`), avec `@supabase/supabase-js` (client `service_role`) pour les opérations admin qui doivent contourner RLS
+- Validation des payloads API : Zod
+- BDD : Supabase (PostgreSQL), migrations SQL versionnées dans `supabase/migrations/`
+- Auth : Supabase Auth (email/mot de passe), protection des routes `/[lang]/admin/*` via `src/middleware.ts`
+- Déploiement : non vérifiable depuis le repo (pas de `vercel.json`, pas de dossier `.vercel/`) — présumé Vercel vu la stack Next.js, à confirmer avec l'utilisateur
+
+**Écart avec une version antérieure de ce document :** un backend FastAPI (Python) et un déploiement Railway/Render étaient mentionnés ici, mais aucun code Python, `requirements.txt` ni dossier `api/` FastAPI n'existe dans le repo — c'est un choix d'architecture abandonné ou jamais concrétisé, pas un oubli à corriger dans le code. Les Route Handlers Next.js couvrent aujourd'hui le même besoin. Ne pas réintroduire FastAPI par réflexe ; un service backend séparé ne redeviendrait pertinent que pour un besoin qui ne rentre pas dans le modèle request/response de Next.js (ex : job asynchrone long, worker de queue, cron indépendant du frontend, traitement lourd) — à évaluer explicitement le cas échéant, pas à supposer.
 
 **Contexte métier :**
 - Villa jusqu'à 17 personnes, location saisonnière haut de gamme
@@ -47,46 +51,69 @@
 - Toujours gérer les erreurs explicitement — jamais de `except: pass` ni `.catch(() => {})`
 - Noms de variables/fonctions en anglais, commentaires en français si nécessaire
 
+*Note : les mentions Python (`requirements.txt`, `# type: ignore`, `except: pass`) restent dans ces règles au cas où un backend Python serait introduit plus tard (voir section Stack) ; elles sont dormantes tant qu'aucun fichier `.py` n'existe dans le repo.*
+
 ---
 
 ## COMMANDES DU PROJET
 ```bash
 # Développement
-npm run dev                              # Next.js sur localhost:3000
-uvicorn main:app --reload                # FastAPI sur localhost:8000
+npm run dev                              # Next.js sur localhost:3000 (pas de backend séparé à lancer)
 
 # Tests
-npm test                                 # Jest
-pytest                                   # Python
+# Aucun framework de test n'est configuré actuellement (pas de Jest ni équivalent,
+# aucun fichier *.test.*/*.spec.*, pas de dossier tests/). Gap connu, prévu en fin
+# de roadmap admin (phase QA) — /testing-strategy doit proposer une mise en place,
+# pas supposer qu'un test runner existe déjà.
 
 # Lint / Format
-npm run lint                             # ESLint
-ruff check . && black .                  # Python
+npm run lint                             # next lint — ESLint est une dépendance installée
+                                          # mais AUCUNE config (.eslintrc/eslint.config.*)
+                                          # n'existe encore : la 1ère exécution demande un
+                                          # choix interactif (Strict/Base). À finaliser.
 
 # Build
 npm run build                            # Next.js production
 ```
 
+Pas de Python dans ce projet : `pytest`, `ruff`, `black` ne s'appliquent pas.
+
 ---
 
-## ARCHITECTURE — FICHIERS CRITIQUES
+## ARCHITECTURE — FICHIERS CRITIQUES (structure réelle du repo)
 ```
 src/
-  app/                → App Router Next.js (routes, layouts)
+  app/
+    [lang]/           → Pages App Router par langue (site public + /admin/*)
+    api/              → Route Handlers Next.js = la couche "backend" du projet
+                        (admin/reservations, admin/seasons, admin/blocked-dates,
+                        admin/settings, reservations publiques...)
   components/
-    ui/               → Composants génériques (Button, Input...)
-    features/         → Composants métier (BookingWidget, Calendar...)
-  lib/                → Utilitaires partagés, clients Supabase
-  types/              → Types TypeScript globaux
-  i18n/               → Fichiers de traduction (fr, en, pt)
+    ui/               → Composants génériques (Button, CurrencyDisplay...)
+    admin/            → Composants de l'espace admin (calendrier, listes, modales)
+    booking/, landing/, pricing/, villa/, faq/, reviews/, layout/
+                      → Composants métier, découpés par domaine plutôt que sous un
+                        dossier "features/" unique (différence avec la structure
+                        initialement décrite ici)
+  lib/                → Utilitaires partagés : supabase/ (clients + queries.ts),
+                        pricing.ts, currency/, i18n/ (logique de routing des langues),
+                        whatsapp.ts, utils.ts
+  types/              → Types TypeScript globaux (index.ts)
+  dictionaries/       → Fichiers de traduction fr.json / en.json / pt.json
+                        (le dossier i18n/ existant contient la logique, pas les
+                        fichiers de traduction eux-mêmes)
+  hooks/              → Hooks React custom (useEscapeKey, useScrollDirection...)
+  data/               → Contenu statique versionné (villa, destination, faq, reviews...)
+  middleware.ts       → Protection des routes /[lang]/admin/* + routing i18n
 
-api/                  → FastAPI
-  models/             → Modèles SQLAlchemy / Pydantic
-  services/           → Logique métier réservations
-  routes/             → Endpoints API
+supabase/
+  migrations/         → Migrations SQL versionnées (settings, seasons...)
 
-tests/                → Tests unitaires et intégration
+tests/                → N'existe pas encore dans ce repo (voir section Commandes) —
+                        conservé ici comme structure cible, pas comme état actuel.
 ```
+
+Le bloc `api/ → FastAPI (models/services/routes)` décrit dans une version antérieure de ce document ne correspond à aucun dossier réel : voir la note dans la section Stack ci-dessus.
 
 ---
 
@@ -96,7 +123,7 @@ tests/                → Tests unitaires et intégration
 |---|---|
 | `/solid-principles` | Conception de classes, architecture, refactoring |
 | `/clean-code` | Écriture ou review de toute fonction/module |
-| `/python-conventions` | Tout code Python / FastAPI |
+| `/python-conventions` | Tout code Python / FastAPI (aucun actuellement dans ce repo — voir section Stack) |
 | `/js-ts-conventions` | Tout code JavaScript / TypeScript / React |
 | `/api-design` | Création ou modification d'endpoints API |
 | `/security` | Auth, données utilisateur, inputs, secrets |
@@ -109,4 +136,4 @@ tests/                → Tests unitaires et intégration
 
 ---
 
-*Dernière mise à jour : Février 2026*
+*Dernière mise à jour : 2026-09-15 — stack revérifiée contre l'état réel du repo*
