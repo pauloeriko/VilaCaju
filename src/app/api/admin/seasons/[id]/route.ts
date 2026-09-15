@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { updateSeason, deleteSeason } from "@/lib/supabase/queries";
+import { getAllSeasons, updateSeason, deleteSeason } from "@/lib/supabase/queries";
+import { findOverlappingSeason, formatOverlapErrorMessage } from "@/lib/pricing";
 
 const updateSchema = z.object({
   name: z.enum(["low", "mid", "high", "peak", "closed"]).optional(),
@@ -34,6 +35,25 @@ export async function PUT(
   }
 
   const updates = parsed.data;
+
+  const existing = await getAllSeasons();
+  if (existing.error) {
+    return NextResponse.json({ error: existing.error }, { status: 500 });
+  }
+
+  const current = existing.data?.find((s) => s.id === id);
+  if (!current) {
+    return NextResponse.json({ error: "Saison introuable" }, { status: 404 });
+  }
+
+  const candidate = { ...current, ...updates };
+  const conflict = findOverlappingSeason(candidate, existing.data ?? [], id);
+  if (conflict) {
+    return NextResponse.json(
+      { error: formatOverlapErrorMessage(conflict) },
+      { status: 400 },
+    );
+  }
 
   const result = await updateSeason(id, updates);
   if (result.error) {

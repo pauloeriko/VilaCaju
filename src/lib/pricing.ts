@@ -1,6 +1,6 @@
 // Moteur de calcul de prix basé sur les saisons Supabase — seule source de vérité des tarifs
 
-import type { Season } from './supabase/types'
+import type { Season, SeasonName } from './supabase/types'
 
 export type PriceResult = {
   pricePerNight: number
@@ -8,6 +8,17 @@ export type PriceResult = {
   nights: number
   season: Season
   minNights: number
+}
+
+// Bornes mois/jour d'une période. Un `Season` complet les respecte, mais une
+// période candidate pas encore enregistrée aussi (ex: formulaire admin avant
+// création) — ce qui permet de réutiliser isDateInSeason pour la détection de
+// chevauchement (cf. findOverlappingSeason).
+export type SeasonBoundaries = {
+  start_month: number
+  start_day: number
+  end_month: number
+  end_day: number
 }
 
 /**
@@ -30,12 +41,22 @@ function parseLocalDate(str: string): Date {
   return new Date(y, m - 1, d)
 }
 
+function isLeapYear(year: number): boolean {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+}
+
 // Une saison se répète chaque année (mois/jour uniquement) — gère le cas où elle
 // chevauche le 31 décembre (ex: 16 Déc → 28 Fév).
-function isDateInSeason(month: number, day: number, s: Season): boolean {
+// `year` (optionnel) ne sert qu'à gérer le 29 février : une saison qui se termine
+// le 28 février représente "jusqu'à la fin février", pas littéralement "jusqu'au
+// 28e jour" — elle couvre donc aussi le 29 février des années bissextiles.
+export function isDateInSeason(month: number, day: number, s: SeasonBoundaries, year?: number): boolean {
   const wraps = s.start_month > s.end_month || (s.start_month === s.end_month && s.start_day > s.end_day)
   const afterStart = month > s.start_month || (month === s.start_month && day >= s.start_day)
-  const beforeEnd = month < s.end_month || (month === s.end_month && day <= s.end_day)
+  const isLeapDayAtEndOfFebruarySeason =
+    month === 2 && day === 29 && s.end_month === 2 && s.end_day === 28 && !!year && isLeapYear(year)
+  const beforeEnd =
+    month < s.end_month || (month === s.end_month && day <= s.end_day) || isLeapDayAtEndOfFebruarySeason
 
   return wraps ? (afterStart || beforeEnd) : (afterStart && beforeEnd)
 }
@@ -43,11 +64,20 @@ function isDateInSeason(month: number, day: number, s: Season): boolean {
 // Retourne la saison couvrant une date donnée (YYYY-MM-DD), ou null si aucune ne la couvre.
 // Utilisé pour le calcul de prix (par nuit) et pour l'affichage du calendrier de disponibilité,
 // afin que les deux s'appuient sur la même source de vérité (table Supabase `seasons`).
+// En cas de chevauchement entre plusieurs périodes pour la même date (normalement
+// empêché à la création/édition, cf. findOverlappingSeason, mais on reste défensif
+// ici en cas de données existantes ou de modification directe en base), retient
+// celle au tarif le plus élevé plutôt que la première trouvée dans le tableau.
 export function getSeasonForDate(dateStr: string, seasons: Season[]): Season | null {
-  const [, monthStr, dayStr] = dateStr.split('-')
+  const [yearStr, monthStr, dayStr] = dateStr.split('-')
+  const year = Number(yearStr)
   const month = Number(monthStr)
   const day = Number(dayStr)
-  return seasons.find((s) => isDateInSeason(month, day, s)) ?? null
+
+  const matches = seasons.filter((s) => isDateInSeason(month, day, s, year))
+  if (matches.length === 0) return null
+
+  return matches.reduce((max, s) => (s.price_per_night > max.price_per_night ? s : max))
 }
 
 export function getSeasonForDateRange(
@@ -110,4 +140,50 @@ export function calculatePrice(
     season,
     minNights: season.min_nights,
   }
+}
+
+// --- Validation anti-chevauchement (utilisée par les routes admin /api/admin/seasons) ---
+
+// Vérifie si deux périodes (récurrentes, mois/jour) partagent au moins un jour.
+function periodsOverlap(a: SeasonBoundaries, b: SeasonBoundaries): boolean {
+  for (let month = 1; month <= 12; month++) {
+    for (let day = 1; day <= 31; day++) {
+      if (isDateInSeason(month, day, a) && isDateInSeason(month, day, b)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+// Retourne la première saison existante qui chevauche la période candidate, ou
+// null si aucune. `excludeId` permet à une saison de s'exclure elle-même lors
+// d'une édition (PUT) — sans ça, elle chevaucherait toujours sa propre période.
+export function findOverlappingSeason(
+  candidate: SeasonBoundaries,
+  seasons: Season[],
+  excludeId?: string,
+): Season | null {
+  return seasons.find((s) => s.id !== excludeId && periodsOverlap(candidate, s)) ?? null
+}
+
+const SEASON_LABELS_FR: Record<SeasonName, string> = {
+  low: 'Basse saison',
+  mid: 'Moyenne saison',
+  high: 'Haute saison',
+  peak: 'Très haute saison',
+  closed: 'Fermé',
+}
+
+function formatMonthDaySlash(month: number, day: number): string {
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`
+}
+
+// Message d'erreur (français, destiné à l'admin) décrivant un chevauchement
+// détecté par findOverlappingSeason — identifie clairement la période en conflit.
+export function formatOverlapErrorMessage(conflict: Season): string {
+  const label = SEASON_LABELS_FR[conflict.name]
+  const start = formatMonthDaySlash(conflict.start_month, conflict.start_day)
+  const end = formatMonthDaySlash(conflict.end_month, conflict.end_day)
+  return `Cette période chevauche "${label}" du ${start} au ${end}.`
 }

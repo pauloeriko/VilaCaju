@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getAllSeasons, createSeason, updateSeasonsByName } from "@/lib/supabase/queries";
+import { findOverlappingSeason, formatOverlapErrorMessage } from "@/lib/pricing";
 
 const seasonSchema = z.object({
   name: z.enum(["low", "mid", "high", "peak", "closed"]),
@@ -46,6 +47,19 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Données invalides", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
+
+  const existing = await getAllSeasons();
+  if (existing.error) {
+    return NextResponse.json({ error: existing.error }, { status: 500 });
+  }
+
+  const conflict = findOverlappingSeason(parsed.data, existing.data ?? []);
+  if (conflict) {
+    return NextResponse.json(
+      { error: formatOverlapErrorMessage(conflict) },
       { status: 400 },
     );
   }
