@@ -20,8 +20,8 @@ export default function CurrencyDisplay({
   className,
   eurLabel,
 }: CurrencyDisplayProps) {
-  const { currency } = useCurrency();
-  const eurAmount = brlToEur(amountBRL);
+  const { currency, eurRate } = useCurrency();
+  const eurAmount = brlToEur(amountBRL, eurRate);
   const label = eurLabel || (lang === "fr" ? "soit ~" : lang === "pt" ? "~" : "~");
 
   // Si la devise active est EUR, on affiche EUR en principal et BRL en secondaire

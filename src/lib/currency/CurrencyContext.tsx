@@ -7,16 +7,24 @@ export type Currency = "BRL" | "EUR";
 interface CurrencyContextValue {
   currency: Currency;
   setCurrency: (c: Currency) => void;
+  eurRate: number;
 }
 
 const STORAGE_KEY = "vila-caju-currency";
+const FALLBACK_EUR_RATE = 5.8;
 
 const CurrencyContext = createContext<CurrencyContextValue>({
   currency: "BRL",
   setCurrency: () => undefined,
+  eurRate: FALLBACK_EUR_RATE,
 });
 
-export function CurrencyProvider({ children }: { children: React.ReactNode }) {
+interface CurrencyProviderProps {
+  children: React.ReactNode;
+  eurRate?: number;
+}
+
+export function CurrencyProvider({ children, eurRate = FALLBACK_EUR_RATE }: CurrencyProviderProps) {
   const [currency, setCurrencyState] = useState<Currency>("BRL");
 
   // Lecture de la préférence persistée au montage
@@ -33,7 +41,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, eurRate }}>
       {children}
     </CurrencyContext.Provider>
   );

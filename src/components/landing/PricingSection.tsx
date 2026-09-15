@@ -22,7 +22,7 @@ const seasons = [
 ];
 
 export default function PricingSection({ lang, dict }: PricingSectionProps) {
-  const { currency } = useCurrency();
+  const { currency, eurRate } = useCurrency();
 
   return (
     <SectionWrapper className="bg-sand-50 pt-14 md:pt-16">
@@ -45,12 +45,12 @@ export default function PricingSection({ lang, dict }: PricingSectionProps) {
         {seasons.map(({ key, price, colorBg, colorBorder, colorText }) => {
           const primaryLabel =
             currency === "EUR"
-              ? formatCurrency(brlToEur(price), "EUR", lang)
+              ? formatCurrency(brlToEur(price, eurRate), "EUR", lang)
               : formatCurrency(price, "BRL", lang);
           const secondaryLabel =
             currency === "EUR"
               ? formatCurrency(price, "BRL", lang)
-              : `~${formatCurrency(brlToEur(price), "EUR", lang)}`;
+              : `~${formatCurrency(brlToEur(price, eurRate), "EUR", lang)}`;
 
           return (
             <div key={key} className={`rounded-softer border-2 ${colorBorder} ${colorBg} p-8 md:p-10 text-center`}>

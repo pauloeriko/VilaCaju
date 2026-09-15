@@ -2,21 +2,27 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { MessageCircle, ShieldX, AlertTriangle } from "lucide-react";
-import { calculatePrice } from "@/lib/pricing/calculator";
-import { formatCurrency, brlToEur, buildWhatsAppUrl } from "@/lib/utils";
+import { MessageCircle, ShieldX, AlertTriangle, CheckCircle } from "lucide-react";
+import { calculatePrice } from "@/lib/pricing";
+import { formatCurrency, brlToEur } from "@/lib/utils";
 import { pricingConfig } from "@/lib/pricing/seasons";
-import { rangeContainsUnavailable } from "@/lib/pricing/availability";
+import { useCurrency } from "@/lib/currency/CurrencyContext";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { Season } from "@/lib/supabase/types";
 import DatePicker from "./DatePicker";
 import GuestCounter from "./GuestCounter";
 import Button from "@/components/ui/Button";
 import AvailabilityCalendar from "@/components/pricing/AvailabilityCalendar";
 
+type SubmitState = "idle" | "loading" | "success" | "error";
+
 interface BookingFormProps {
   lang: Locale;
   dict: Dictionary["booking"];
+  blockedDates: string[];
+  seasons: Season[];
+  cleaningFee: number;
 }
 
 interface FormState {
@@ -27,170 +33,199 @@ interface FormState {
   name: string;
   email: string;
   phone: string;
+  country: string;
   message: string;
 }
 
+function rangeHasBlockedDate(checkIn: string, checkOut: string, blocked: string[]): boolean {
+  if (!checkIn || !checkOut) return false;
+  const blockedSet = new Set(blocked);
+  const [ciY, ciM, ciD] = checkIn.split("-").map(Number);
+  const [coY, coM, coD] = checkOut.split("-").map(Number);
+  const current = new Date(ciY, ciM - 1, ciD);
+  const end = new Date(coY, coM - 1, coD);
 
-export default function BookingForm({ lang, dict }: BookingFormProps) {
+  while (current < end) {
+    const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`;
+    if (blockedSet.has(key)) return true;
+    current.setDate(current.getDate() + 1);
+  }
+  return false;
+}
+
+export default function BookingForm({ lang, dict, blockedDates, seasons, cleaningFee }: BookingFormProps) {
   const searchParams = useSearchParams();
+  const { eurRate } = useCurrency();
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const defaultCheckout = new Date(tomorrow);
   defaultCheckout.setDate(defaultCheckout.getDate() + 3);
 
-  // Pré-remplissage depuis les query params (ex: /reserver?checkIn=2026-07-01&checkOut=2026-07-08)
-  const calendarInitialCheckIn  = searchParams.get("checkIn");
-  const calendarInitialCheckOut = searchParams.get("checkOut");
-  const urlCheckIn  = calendarInitialCheckIn  ?? tomorrow.toISOString().split("T")[0];
-  const urlCheckOut = calendarInitialCheckOut ?? defaultCheckout.toISOString().split("T")[0];
+  function toLocalStr(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+
+  const urlCheckIn  = searchParams.get("checkIn")  ?? toLocalStr(tomorrow);
+  const urlCheckOut = searchParams.get("checkOut") ?? toLocalStr(defaultCheckout);
 
   const [form, setForm] = useState<FormState>({
-    checkIn: urlCheckIn,
+    checkIn:  urlCheckIn,
     checkOut: urlCheckOut,
-    adults: 2,
+    adults:   2,
     children: 0,
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
+    name:     "",
+    email:    "",
+    phone:    "",
+    country:  "",
+    message:  "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [errors, setErrors]           = useState<Partial<Record<keyof FormState, string>>>({});
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
-  const MIN_NIGHTS = 3;
+  // Parse YYYY-MM-DD en heure locale (évite le décalage UTC en fuseau négatif)
+  function parseLocal(str: string): Date {
+    const [y, m, d] = str.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
 
-  // Validation : dates occupées ou fermeture annuelle dans la plage
-  const rangeError = useMemo(() => {
+  const rangeBlocked = useMemo(() => {
     if (!form.checkIn || !form.checkOut) return false;
-    const ci = new Date(form.checkIn);
-    const co = new Date(form.checkOut);
+    const ci = parseLocal(form.checkIn);
+    const co = parseLocal(form.checkOut);
     if (co <= ci) return false;
-    return rangeContainsUnavailable(form.checkIn, form.checkOut);
+    return rangeHasBlockedDate(form.checkIn, form.checkOut, blockedDates);
+  }, [form.checkIn, form.checkOut, blockedDates]);
+
+  const nightsCount = useMemo(() => {
+    if (!form.checkIn || !form.checkOut) return 0;
+    const ci = parseLocal(form.checkIn);
+    const co = parseLocal(form.checkOut);
+    return Math.max(0, Math.round((co.getTime() - ci.getTime()) / (1000 * 60 * 60 * 24)));
   }, [form.checkIn, form.checkOut]);
 
-  // Le formulaire est complet quand tous les champs requis sont remplis
+  const priceResult = useMemo(() => {
+    if (!form.checkIn || !form.checkOut || seasons.length === 0) return null;
+    const ci = parseLocal(form.checkIn);
+    const co = parseLocal(form.checkOut);
+    if (co <= ci) return null;
+    return calculatePrice(ci, co, seasons, cleaningFee);
+  }, [form.checkIn, form.checkOut, seasons, cleaningFee]);
+
+  const isSeasonClosed = priceResult?.season.name === "closed";
+  const minNights = priceResult?.minNights ?? 3;
+
   const isFormComplete = useMemo(() => (
     form.name.trim() !== "" &&
     form.email.trim() !== "" &&
     form.phone.trim() !== ""
   ), [form.name, form.email, form.phone]);
 
-  const nightsCount = useMemo(() => {
-    if (!form.checkIn || !form.checkOut) return 0;
-    const ci = new Date(form.checkIn);
-    const co = new Date(form.checkOut);
-    return Math.max(0, Math.round((co.getTime() - ci.getTime()) / (1000 * 60 * 60 * 24)));
-  }, [form.checkIn, form.checkOut]);
-
-  const breakdown = useMemo(() => {
-    if (!form.checkIn || !form.checkOut) return null;
-    const ci = new Date(form.checkIn);
-    const co = new Date(form.checkOut);
-    if (co <= ci) return null;
-    return calculatePrice(ci, co, lang);
-  }, [form.checkIn, form.checkOut, lang]);
-
   function validate(): boolean {
     const errs: Partial<Record<keyof FormState, string>> = {};
 
-    if (!form.name.trim()) errs.name = dict.errors.required;
+    if (!form.name.trim())  errs.name  = dict.errors.required;
     if (!form.email.trim()) errs.email = dict.errors.required;
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       errs.email = dict.errors.invalidEmail;
     if (!form.phone.trim()) errs.phone = dict.errors.required;
+
     if (form.adults + form.children > pricingConfig.maxGuests)
       errs.adults = dict.errors.maxGuests;
-    if (breakdown?.hasClosedDays || rangeError) errs.checkIn = dict.errors.closedPeriod;
-    if (nightsCount > 0 && nightsCount < MIN_NIGHTS) {
-      errs.checkIn = dict.errors.minStay.replace("{min}", String(MIN_NIGHTS));
-    }
+    if (isSeasonClosed)
+      errs.checkIn = dict.errors.closedPeriod;
+    else if (rangeBlocked)
+      errs.checkIn = dict.errors.unavailableDates;
+    else if (nightsCount > 0 && nightsCount < minNights)
+      errs.checkIn = dict.errors.minStay.replace("{min}", String(minNights));
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
 
-    // Libellés localisés du message WhatsApp
-    const labels = {
-      fr: {
-        title:    "*Nouvelle demande de réservation — Vila Caju*",
-        checkIn:  "Arrivée",
-        checkOut: "Départ",
-        guests:   (a: number, c: number) => `${a} adulte${a > 1 ? "s" : ""}${c > 0 ? `, ${c} enfant${c > 1 ? "s" : ""}` : ""}`,
-        name:     "Nom",
-        email:    "Email",
-        phone:    "Tél",
-        msg:      "Message",
-        total:    "Total estimé",
-      },
-      en: {
-        title:    "*New booking request — Vila Caju*",
-        checkIn:  "Check-in",
-        checkOut: "Check-out",
-        guests:   (a: number, c: number) => `${a} adult${a > 1 ? "s" : ""}${c > 0 ? `, ${c} child${c > 1 ? "ren" : ""}` : ""}`,
-        name:     "Name",
-        email:    "Email",
-        phone:    "Phone",
-        msg:      "Message",
-        total:    "Estimated total",
-      },
-      pt: {
-        title:    "*Nova solicitação de reserva — Vila Caju*",
-        checkIn:  "Chegada",
-        checkOut: "Saída",
-        guests:   (a: number, c: number) => `${a} adulto${a > 1 ? "s" : ""}${c > 0 ? `, ${c} criança${c > 1 ? "s" : ""}` : ""}`,
-        name:     "Nome",
-        email:    "Email",
-        phone:    "Tel",
-        msg:      "Mensagem",
-        total:    "Total estimado",
-      },
-    } as const;
+    setSubmitState("loading");
+    setSubmitError(null);
 
-    const l = labels[lang];
+    try {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guest_name:    form.name,
+          guest_email:   form.email,
+          guest_phone:   form.phone,
+          check_in:      form.checkIn,
+          check_out:     form.checkOut,
+          guests_count:  form.adults + form.children,
+          total_price:      priceResult?.totalPrice   ?? 0,
+          price_per_night:  priceResult?.pricePerNight ?? undefined,
+          season_id:        priceResult?.season.id     ?? undefined,
+          guest_country:    form.country  || undefined,
+          message:          form.message  || undefined,
+        }),
+      });
 
-    const message = [
-      l.title,
-      ``,
-      `${l.checkIn}: ${form.checkIn}`,
-      `${l.checkOut}: ${form.checkOut}`,
-      `${l.guests(form.adults, form.children)}`,
-      ``,
-      `${l.name}: ${form.name}`,
-      `${l.email}: ${form.email}`,
-      `${l.phone}: ${form.phone}`,
-      form.message ? `${l.msg}: ${form.message}` : "",
-      ``,
-      breakdown
-        ? `${l.total}: ${
-            lang === "pt"
-              ? formatCurrency(breakdown.total, "BRL", lang)
-              : formatCurrency(brlToEur(breakdown.total), "EUR", lang)
-          }`
-        : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
+      const json = await response.json() as { success?: boolean; id?: string; whatsappUrl?: string; error?: string };
 
-    window.open(buildWhatsAppUrl(message), "_blank");
+      if (!response.ok || !json.success) {
+        setSubmitState("error");
+        setSubmitError(json.error ?? dict.errors.submitError);
+        return;
+      }
+
+      setWhatsappUrl(json.whatsappUrl ?? null);
+      setSubmitState("success");
+    } catch {
+      setSubmitState("error");
+      setSubmitError(dict.errors.submitError);
+    }
   }
 
   const handleCalendarDatesChange = useCallback(
     (checkIn: string, checkOut: string) => {
       setForm((prev) => ({ ...prev, checkIn, checkOut }));
     },
-    []
+    [],
   );
 
   const totalGuests = form.adults + form.children;
+  const canSubmit   = isFormComplete && !rangeBlocked && !isSeasonClosed && !(nightsCount > 0 && nightsCount < minNights);
 
+  // ── Écran de succès ─────────────────────────────────────────────────────────
+  if (submitState === "success") {
+    return (
+      <div className="max-w-lg mx-auto text-center space-y-6 py-12">
+        <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+        <h2 className="font-heading text-2xl font-bold text-charcoal-800">
+          {dict.successTitle}
+        </h2>
+        <p className="text-charcoal-600">{dict.successText}</p>
+        {whatsappUrl && (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-soft hover:bg-[#1ebe5c] transition-colors"
+          >
+            <MessageCircle className="w-5 h-5" />
+            {dict.successWhatsapp}
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  // ── Formulaire ──────────────────────────────────────────────────────────────
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-      {/* Form */}
+      {/* Colonne gauche : formulaire */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -210,7 +245,7 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
           />
         </div>
 
-        {/* Guests */}
+        {/* Voyageurs */}
         <div className="card-organic p-5 space-y-4">
           <GuestCounter
             label={dict.adults}
@@ -231,8 +266,9 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
           )}
         </div>
 
-        {/* Contact info */}
+        {/* Coordonnées */}
         <div className="space-y-4">
+          {/* Nom */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
               {dict.name}
@@ -248,6 +284,7 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
               {dict.email}
@@ -263,6 +300,7 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
 
+          {/* Téléphone */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
               {dict.phone}
@@ -279,6 +317,20 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
           </div>
 
+          {/* Pays */}
+          <div>
+            <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
+              {dict.country}
+            </label>
+            <input
+              type="text"
+              value={form.country}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
+              className="w-full px-4 py-3 border border-sand-300 rounded-soft bg-white text-charcoal-700 focus:outline-none focus:ring-2 focus:ring-terracotta-400/50 focus:border-terracotta-400 transition-colors"
+            />
+          </div>
+
+          {/* Message */}
           <div>
             <label className="block text-sm font-medium text-charcoal-700 mb-1.5">
               {dict.message}
@@ -292,31 +344,37 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
           </div>
         </div>
 
-        {/* Alerte durée minimale */}
-        {nightsCount > 0 && nightsCount < MIN_NIGHTS && !rangeError && (
+        {/* Alertes */}
+        {nightsCount > 0 && nightsCount < minNights && !rangeBlocked && !isSeasonClosed && (
           <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-soft px-4 py-3">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
             <p className="text-sm text-amber-700 font-medium">
-              {dict.errors.minStay.replace("{min}", String(MIN_NIGHTS))}
+              {dict.errors.minStay.replace("{min}", String(minNights))}
             </p>
           </div>
         )}
 
-        {/* Alerte dates non disponibles */}
-        {rangeError && (
+        {isSeasonClosed && (
           <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3">
             <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700 font-medium">
-              {lang === "fr"
-                ? "Cette période contient des dates déjà réservées ou en fermeture annuelle."
-                : lang === "pt"
-                ? "Este período contém datas já reservadas ou em fechamento anual."
-                : "This period contains already booked or closed dates."}
-            </p>
+            <p className="text-sm text-red-700 font-medium">{dict.errors.closedPeriod}</p>
           </div>
         )}
 
-        {/* Indicateur champs manquants */}
+        {rangeBlocked && !isSeasonClosed && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3">
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-700 font-medium">{dict.errors.unavailableDates}</p>
+          </div>
+        )}
+
+        {submitState === "error" && submitError && (
+          <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-soft px-4 py-3">
+            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-700 font-medium">{submitError}</p>
+          </div>
+        )}
+
         {!isFormComplete && (
           <p className="text-sm text-charcoal-400 text-center">
             {lang === "fr"
@@ -332,89 +390,100 @@ export default function BookingForm({ lang, dict }: BookingFormProps) {
           variant="whatsapp"
           size="lg"
           className="w-full"
-          disabled={!isFormComplete || rangeError || (nightsCount > 0 && nightsCount < MIN_NIGHTS)}
+          disabled={!canSubmit || submitState === "loading"}
         >
           <MessageCircle className="w-5 h-5" />
-          {dict.submit}
+          {submitState === "loading" ? dict.loading : dict.submit}
         </Button>
       </form>
 
-      {/* Sidebar : calendrier + récapitulatif */}
+      {/* Colonne droite : calendrier + récapitulatif */}
       <div>
         <div className="lg:sticky lg:top-24 space-y-6">
-        {/* Calendrier de disponibilité */}
-        <div className="card-organic p-6">
-          <AvailabilityCalendar
-            lang={lang}
-            onDatesChange={handleCalendarDatesChange}
-            initialCheckIn={calendarInitialCheckIn}
-            initialCheckOut={calendarInitialCheckOut}
-          />
-        </div>
+          {/* Calendrier de disponibilité */}
+          <div className="card-organic p-6">
+            <AvailabilityCalendar
+              lang={lang}
+              blockedDates={blockedDates}
+              seasons={seasons}
+              onDatesChange={handleCalendarDatesChange}
+              initialCheckIn={searchParams.get("checkIn")}
+              initialCheckOut={searchParams.get("checkOut")}
+            />
+          </div>
 
-        {/* Récapitulatif */}
-        <div className="card-organic p-6">
-          <h3 className="font-heading text-xl font-bold text-charcoal-800 mb-4">
-            {dict.summary}
-          </h3>
+          {/* Récapitulatif de prix */}
+          <div className="card-organic p-6">
+            <h3 className="font-heading text-xl font-bold text-charcoal-800 mb-4">
+              {dict.summary}
+            </h3>
 
-          {breakdown && breakdown.nights > 0 ? (
-            <div className="space-y-3">
-              {(() => {
-                // FR/EN → EUR en principal, PT → BRL en principal
-                const isPt = lang === "pt";
-                const primary   = (brl: number) => isPt ? formatCurrency(brl, "BRL", lang) : formatCurrency(brlToEur(brl), "EUR", lang);
-                const secondary = (brl: number) => isPt ? `~${formatCurrency(brlToEur(brl), "EUR", lang)}` : `~${formatCurrency(brl, "BRL", lang)}`;
+            {priceResult && priceResult.nights > 0 && !isSeasonClosed ? (
+              <div className="space-y-3">
+                {(() => {
+                  const isPt = lang === "pt";
+                  const primary   = (brl: number) => isPt ? formatCurrency(brl, "BRL", lang) : formatCurrency(brlToEur(brl, eurRate), "EUR", lang);
+                  const secondary = (brl: number) => isPt ? `~${formatCurrency(brlToEur(brl, eurRate), "EUR", lang)}` : `~${formatCurrency(brl, "BRL", lang)}`;
 
-                return (
-                  <>
-                    {breakdown.nightlyBreakdown.map((item, i) => (
-                      <div key={i} className="flex justify-between text-sm text-charcoal-700">
-                        <span>{item.label} ({item.nights} {dict.nights})</span>
-                        <span>{primary(item.subtotal)}</span>
+                  const nightsPrice = priceResult.pricePerNight * priceResult.nights;
+                  const cleaningFee = priceResult.totalPrice - nightsPrice;
+
+                  return (
+                    <>
+                      <div className="flex justify-between text-sm text-charcoal-700">
+                        <span>
+                          {primary(priceResult.pricePerNight)} {dict.perNight} × {priceResult.nights} {dict.nights}
+                        </span>
+                        <span>{primary(nightsPrice)}</span>
                       </div>
-                    ))}
 
-                    <div className="border-t border-sand-200 pt-3 flex justify-between font-bold text-charcoal-800">
-                      <span>{dict.total}</span>
-                      <div className="text-right">
-                        <div>{primary(breakdown.total)}</div>
-                        <div className="text-sm font-normal text-sand-500">
-                          {secondary(breakdown.total)}
+                      {cleaningFee > 0 && (
+                        <div className="flex justify-between text-sm text-charcoal-700">
+                          <span>{dict.cleaningFee}</span>
+                          <span>{primary(cleaningFee)}</span>
+                        </div>
+                      )}
+
+                      <div className="border-t border-sand-200 pt-3 flex justify-between font-bold text-charcoal-800">
+                        <span>{dict.total}</span>
+                        <div className="text-right">
+                          <div>{primary(priceResult.totalPrice)}</div>
+                          <div className="text-sm font-normal text-sand-500">
+                            {secondary(priceResult.totalPrice)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                );
-              })()}
+                    </>
+                  );
+                })()}
 
-              {/* Politique d'annulation */}
-              <div className="mt-4 border-t border-sand-200 pt-4">
-                <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
-                  {dict.cancellationPolicy}
-                </p>
-                <div className="flex items-start gap-1.5">
-                  <ShieldX className="w-4 h-4 text-terracotta-400 shrink-0 mt-0.5" />
-                  <span className="text-xs text-charcoal-700/80">
-                    {lang === "fr"
-                      ? "Les séjours sont fermes et définitifs — aucun remboursement en cas d'annulation."
-                      : lang === "pt"
-                      ? "As reservas são firmes e definitivas — sem reembolso em caso de cancelamento."
-                      : "Bookings are firm and final — no refund in case of cancellation."}
-                  </span>
+                {/* Politique d'annulation */}
+                <div className="mt-4 border-t border-sand-200 pt-4">
+                  <p className="text-xs font-semibold text-charcoal-700 uppercase tracking-wider mb-2">
+                    {dict.cancellationPolicy}
+                  </p>
+                  <div className="flex items-start gap-1.5">
+                    <ShieldX className="w-4 h-4 text-terracotta-400 shrink-0 mt-0.5" />
+                    <span className="text-xs text-charcoal-700/80">
+                      {lang === "fr"
+                        ? "Les séjours sont fermes et définitifs — aucun remboursement en cas d'annulation."
+                        : lang === "pt"
+                        ? "As reservas são firmes e definitivas — sem reembolso em caso de cancelamento."
+                        : "Bookings are firm and final — no refund in case of cancellation."}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <p className="text-sm text-charcoal-700/50 italic">
-              {lang === "fr"
-                ? "S\u00e9lectionnez vos dates pour voir le prix"
-                : lang === "pt"
-                ? "Selecione suas datas para ver o pre\u00e7o"
-                : "Select your dates to see the price"}
-            </p>
-          )}
-        </div>
+            ) : (
+              <p className="text-sm text-charcoal-700/50 italic">
+                {lang === "fr"
+                  ? "Sélectionnez vos dates pour voir le prix"
+                  : lang === "pt"
+                  ? "Selecione suas datas para ver o preço"
+                  : "Select your dates to see the price"}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

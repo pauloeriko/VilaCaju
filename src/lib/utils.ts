@@ -22,10 +22,12 @@ export function formatCurrency(
   }).format(amount);
 }
 
-export const EUR_RATE = 5.8;
+export function brlToEur(brl: number, eurRate: number): number {
+  return Math.round(brl / eurRate);
+}
 
-export function brlToEur(brl: number): number {
-  return Math.round(brl / EUR_RATE);
+export function eurToBrl(eur: number, eurRate: number): number {
+  return Math.round(eur * eurRate);
 }
 
 export const WHATSAPP_NUMBER = "33759568241";

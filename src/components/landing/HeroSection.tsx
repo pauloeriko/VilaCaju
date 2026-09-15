@@ -12,9 +12,10 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 interface HeroSectionProps {
   dict: Dictionary["hero"];
   lang: Locale;
+  blockedDates: string[];
 }
 
-export default function HeroSection({ dict, lang }: HeroSectionProps) {
+export default function HeroSection({ dict, lang, blockedDates }: HeroSectionProps) {
   return (
     <section className="relative h-screen -mt-16 md:-mt-20 flex items-center justify-center overflow-hidden">
       {/* Background image */}
@@ -67,7 +68,7 @@ export default function HeroSection({ dict, lang }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <HeroDatePicker lang={lang} dict={dict} />
+          <HeroDatePicker lang={lang} dict={dict} blockedDates={blockedDates} />
         </motion.div>
 
         {/* CTA secondaires */}
